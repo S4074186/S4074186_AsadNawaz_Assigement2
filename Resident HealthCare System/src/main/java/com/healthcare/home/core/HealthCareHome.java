@@ -163,7 +163,7 @@ public class HealthCareHome implements Serializable {
             throw new UnAuthorizationException("Staff not rostered at this time");
     }
 
-    private Bed findBed(String id) {
+    public Bed findBed(String id) {
         Bed bed = bedList.get(id);
         if (bed == null) throw new ValidationFailedException("Bed not found: " + id);
         return bed;

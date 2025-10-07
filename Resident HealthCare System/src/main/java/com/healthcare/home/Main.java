@@ -147,7 +147,7 @@ public class Main {
                     break;
                     case "8": {
                         List<com.healthcare.home.audit.AuditLog.Entry> entries = com.healthcare.home.audit.AuditLog.get().getEntries();
-                        entries.forEach(e -> System.out.println(e.at() + " | " + e.staffId() + " | " + e.action() + " | " + e.message()));
+                        entries.forEach(e -> System.out.println(e.getAt() + " | " + e.getStaffId() + " | " + e.getAaction() + " | " + e.message()));
                     }
                     break;
                     case "9": {

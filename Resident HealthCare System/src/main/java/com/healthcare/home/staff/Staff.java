@@ -48,20 +48,21 @@ public abstract class Staff implements Serializable {
         return id;
     }
     public boolean has(Access access) {
-        return switch (role) {
-            case MANAGER ->
-                    access == Access.ADD_STAFF ||
-                    access == Access.UPDATE_STAFF ||
-                    access == Access.VIEW_RESIDENT ||
-                    access == Access.ADD_RESIDENT;
+        switch (role) {
+            case MANAGER:
+                return access == Access.ADD_STAFF ||
+                        access == Access.UPDATE_STAFF ||
+                        access == Access.VIEW_RESIDENT ||
+                        access == Access.ADD_RESIDENT;
 
-            case DOCTOR ->
-                    access == Access.VIEW_RESIDENT ||
-                    access == Access.WRITE_PRESCRIPTION;
+            case DOCTOR:
+                return access == Access.VIEW_RESIDENT ||
+                        access == Access.WRITE_PRESCRIPTION;
 
-            case NURSE  ->
-                    access == Access.VIEW_RESIDENT ||
-                    access == Access.ADMINISTER_MEDICATION;
-        };
+            case NURSE:
+                return access == Access.VIEW_RESIDENT ||
+                        access == Access.ADMINISTER_MEDICATION;
+        }
+        return false;
     }
 }
