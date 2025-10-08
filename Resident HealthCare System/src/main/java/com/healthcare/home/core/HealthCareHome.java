@@ -179,9 +179,9 @@ public class HealthCareHome implements Serializable {
 
     public Staff authenticate(String username, String password) {
 
-        Map<String, Staff> staffMap = getStaffList();
-        for (int i = 0; i < staffMap.size(); i++) {
-            Staff staff = staffMap.get(i);
+        Map<String, Staff> staffListMap = getStaffList();
+        Collection<Staff> staffList = staffListMap.values();
+        for (Staff staff : staffList) {
             if (staff.getUsername().equals(username) && staff.getPasswordHash().equals(password)) {
                 return staff;
             }

@@ -8,8 +8,8 @@ public class Resident implements Serializable {
 
     private final String id;
     private final String name;
-    private final Gender gender;
-    private final boolean requiresIsolation;
+    private Gender gender;
+    private boolean requiresIsolation;
     private final List<Prescription> prescriptions = new ArrayList<>();
 
     public Resident(String id, String name, Gender gender, boolean requiresIsolation) {
@@ -17,6 +17,11 @@ public class Resident implements Serializable {
         this.name = name;
         this.gender = gender;
         this.requiresIsolation = requiresIsolation;
+    }
+
+    public Resident(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public String getId() {

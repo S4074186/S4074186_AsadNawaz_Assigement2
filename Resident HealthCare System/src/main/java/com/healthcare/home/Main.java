@@ -2,14 +2,10 @@ package com.healthcare.home;
 
 import com.healthcare.home.core.HealthCareHome;
 import com.healthcare.home.core.SerializingService;
-import com.healthcare.home.entity.*;
-import com.healthcare.home.staff.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.util.*;
 
 public class Main extends Application {
     public static void main(String[] args) {

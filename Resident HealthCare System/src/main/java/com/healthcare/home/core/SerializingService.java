@@ -1,7 +1,13 @@
 package com.healthcare.home.core;
 
+import com.healthcare.home.scheduler.Shift;
+import com.healthcare.home.staff.Doctor;
+import com.healthcare.home.staff.Manager;
+import com.healthcare.home.staff.Nurse;
+
 import java.io.*;
 import java.nio.file.*;
+import java.time.LocalDateTime;
 
 public class SerializingService {
 
@@ -19,10 +25,22 @@ public class SerializingService {
     }
 
     public static HealthCareHome readOrCreateFile() {
-        if (!Files.exists(HEALTH_CARE_SYSTEM_FILE))
-            return new HealthCareHome();
-        try (ObjectInputStream inputStream =
-                     new ObjectInputStream(Files.newInputStream(HEALTH_CARE_SYSTEM_FILE))) {
+        if (!Files.exists(HEALTH_CARE_SYSTEM_FILE)) {
+            HealthCareHome home = new HealthCareHome();
+            Manager manager = new Manager("M1", "Manager", "manager", "MANAGER-PASSWORD");
+            Doctor doctor = new Doctor("D1", "Doctor", "doctor", "DOCTOR-PASSWORD");
+            Nurse nurse = new Nurse("N1", "Nurse", "nurse", "NURSE-PASSWORD");
+
+            home.registerNewStaff(manager);
+            home.registerNewStaff(doctor);
+            home.registerNewStaff(nurse);
+
+            LocalDateTime now = LocalDateTime.now();
+            home.assigningShift(manager, doctor, new Shift(now, now.plusHours(8)));
+            home.assigningShift(manager, nurse, new Shift(now, now.plusHours(8)));
+            return home;
+        }
+        try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(HEALTH_CARE_SYSTEM_FILE))) {
             return (HealthCareHome) inputStream.readObject();
         } catch (Exception e) {
             System.err.println("Loading existing records from file "
