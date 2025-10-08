@@ -2,10 +2,12 @@ com\healthcare\home\scheduler\Shift.class
 com\healthcare\home\core\HomeStaff.class
 com\healthcare\home\exceptions\UnAuthorizationException.class
 com\healthcare\home\staff\Nurse.class
+com\healthcare\home\controllers\BedDetailsController.class
 com\healthcare\home\staff\Staff$1.class
 com\healthcare\home\exceptions\ResidentNotFoundException.class
 com\healthcare\home\entity\Role.class
 com\healthcare\home\Main.class
+com\healthcare\home\controllers\DashboardController.class
 com\healthcare\home\core\HealthCareHome.class
 com\healthcare\home\entity\Resident.class
 com\healthcare\home\staff\Doctor.class
@@ -20,6 +22,7 @@ com\healthcare\home\scheduler\Schedule$ShiftAssignment.class
 com\healthcare\home\entity\Prescription.class
 com\healthcare\home\audit\AuditLog.class
 com\healthcare\home\entity\Bed.class
+com\healthcare\home\controllers\LoginController.class
 com\healthcare\home\exceptions\BedNotAvailableException.class
 com\healthcare\home\auth\Access.class
 com\healthcare\home\scheduler\Schedule.class

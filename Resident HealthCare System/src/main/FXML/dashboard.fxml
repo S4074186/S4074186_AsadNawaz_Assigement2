@@ -1,0 +1,12 @@
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.healthcare.home.controllers.DashboardController">
+    <top>
+        <Label fx:id="welcomeLabel" style="-fx-padding:10; -fx-font-size:16;"/>
+    </top>
+    <center>
+        <GridPane fx:id="bedGrid" hgap="8" vgap="8" alignment="CENTER" style="-fx-padding:15;"/>
+    </center>
+</BorderPane>
