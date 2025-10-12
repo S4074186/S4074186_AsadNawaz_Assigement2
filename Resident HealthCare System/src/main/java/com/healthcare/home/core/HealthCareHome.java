@@ -7,9 +7,10 @@ import com.healthcare.home.auth.Access;
 import com.healthcare.home.scheduler.Schedule;
 import com.healthcare.home.scheduler.Shift;
 import com.healthcare.home.staff.*;
-import com.healthcare.home.util.ActionLogger;
 
 import java.io.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -51,25 +52,101 @@ public class HealthCareHome implements Serializable {
         bedList.put("W2-R203-B1", new Bed("W2-R203-B1"));
 
         // adding manager in staff
-        Manager manager = new Manager("MGR1", "Manager", "admin", "MANAGER-PASSWORD");
+        Manager manager = new Manager("Manager", "admin", "MANAGER-PASSWORD");
         staffList.put(manager.getId(), manager);
     }
 
-    /**
-     Simple register that logs system generated staff addition.
-     */
-    public void registerNewStaff(Staff staff) {
-        staffList.put(staff.getId(), staff);
-        audit.entryLog("SystemGenerated", Access.ADD_STAFF, "Registered staff with id: " + staff.getId());
-    }
 
-    /**
-     Manager adds a staff member. This is a manager only operation.
-     */
+    // manager adds new staff
     public void addNewStaff(Staff manager, Staff staff) {
         requireAuthorizeManager(manager);
         staffList.put(staff.getId(), staff);
         audit.entryLog(manager.getId(), Access.ADD_STAFF, "Added staff with id: " + staff.getId());
+
+        // assign default shifts automatically
+        assignDefaultShifts(staff);
+    }
+
+    // system adds new staff (like pre-defined)
+    public void registerNewStaff(Staff staff) {
+        staffList.put(staff.getId(), staff);
+        audit.entryLog("SystemGenerated", Access.ADD_STAFF, "Registered staff with id: " + staff.getId());
+
+        // assign default shifts automatically
+        assignDefaultShifts(staff);
+    }
+
+    /**
+     * Assign default weekly shifts to staff (doctor or nurse)
+     */
+    private void assignDefaultShifts(Staff staff) {
+        if (staff instanceof Nurse) {
+            List<Nurse> nurses = new ArrayList<>();
+            for (Staff s : staffList.values()) {
+                if (s instanceof Nurse) nurses.add((Nurse) s);
+            }
+
+            int nurseIndex = nurses.indexOf(staff);
+            boolean isEven = nurseIndex % 2 == 0;
+
+            for (DayOfWeek day : DayOfWeek.values()) {
+                LocalDate date = LocalDate.now().with(day);
+
+                LocalDateTime shiftStart;
+                LocalDateTime shiftEnd;
+
+                // even nurses: morning 8–16
+                // odd nurses: evening 16–24
+                if (isEven) {
+                    shiftStart = date.atTime(8, 0);
+                    shiftEnd = date.atTime(16, 0);
+                } else {
+                    shiftStart = date.atTime(16, 0);
+                    shiftEnd = date.plusDays(1).atTime(0, 0);
+                }
+
+                scheduler.assigningShiftToStaff(staff, new Shift(shiftStart, shiftEnd));
+            }
+        } else if (staff instanceof Doctor) {
+            // doctor 1-hour shift each day
+            for (DayOfWeek day : DayOfWeek.values()) {
+                LocalDate date = LocalDate.now().with(day);
+                LocalDateTime start = date.atTime(10, 0);
+                LocalDateTime end = start.plusHours(1);
+                scheduler.assigningShiftToStaff(staff, new Shift(start, end));
+            }
+        }
+    }
+
+    /**
+     * Compliance check for staff scheduling
+     */
+    public void checkCompliance() {
+        for (Staff s : staffList.values()) {
+            List<Shift> shifts = scheduler.getDailyRoster().getOrDefault(s.getId(), List.of());
+            Map<LocalDate, Long> dailyHours = new HashMap<>();
+
+            for (Shift shift : shifts) {
+                LocalDate date = (LocalDate) shift.getStart().toLocalDate();
+                dailyHours.merge(date, shift.hours(), Long::sum);
+            }
+
+            if (s instanceof Nurse) {
+                for (Map.Entry<LocalDate, Long> e : dailyHours.entrySet()) {
+                    if (e.getValue() > 8) {
+                        throw new RosterUnfollowedException("Nurse " + s.getId()
+                                + " has more than 8 hours on " + e.getKey());
+                    }
+                }
+            } else if (s instanceof Doctor) {
+                for (Map.Entry<LocalDate, Long> e : dailyHours.entrySet()) {
+                    if (!e.getValue().equals(1L)) {
+                        throw new RosterUnfollowedException("Doctor " + s.getId()
+                                + " must have 1-hour shift daily");
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -165,7 +242,7 @@ public class HealthCareHome implements Serializable {
      Doctor writes prescription.
      Doctor must be rostered.
      */
-    public void writePrescription(Staff doctor, String bedId, Prescription prescription) {
+    public void writePrescription(Staff doctor, String bedId, List<Prescription> newPrescriptions) {
         requireAuthorizeRole(doctor, Role.DOCTOR);
         requireOnDutyStaff(doctor);
 
@@ -173,10 +250,18 @@ public class HealthCareHome implements Serializable {
         Resident resident = bed.getResident();
         if (resident == null) throw new ResidentNotFoundException("No resident in bed");
 
-        prescriptionList.put(prescription.getId(), prescription);
-        resident.setPrescription(prescription);
-        audit.entryLog(doctor.getId(), Access.WRITE_PRESCRIPTION, "Prescription " + prescription.getId() + " added for resident " + resident.getId());
+        List<Prescription> existing = resident.getPrescriptionList();
+        if (existing == null) existing = new ArrayList<>();
+
+        existing.addAll(newPrescriptions);
+        resident.setPrescriptionList(existing);
+
+        for (Prescription p : newPrescriptions) {
+            audit.entryLog(doctor.getId(), Access.WRITE_PRESCRIPTION,
+                    "Prescription " + p.getId() + " added for resident " + resident.getId());
+        }
     }
+
 
     /**
      Doctor updates prescription content.
@@ -279,7 +364,7 @@ public class HealthCareHome implements Serializable {
             // write resident object
             oos.writeObject(resident);
             // also write all prescriptions for resident for completeness
-            Prescription pres = resident.getPrescription();
+            List<Prescription> pres = resident.getPrescriptionList();
             oos.writeObject(pres);
             oos.flush();
         }
@@ -357,28 +442,6 @@ public class HealthCareHome implements Serializable {
             throw new UnAuthorizationException("Staff not rostered at this time");
     }
 
-    public void updateResidentPrescription(Nurse nurse, Resident resident,
-                                           String newMedicine, String newDose, List<String> newTimes) {
-        Prescription oldPrescription = resident.getPrescription();
-        if (oldPrescription == null) {
-            System.out.println("No prescription found for resident " + resident.getName());
-            return;
-        }
-
-        // Update fields
-        oldPrescription.setMedicine(newMedicine);
-        oldPrescription.setDose(newDose);
-        oldPrescription.getTimes().clear();
-        oldPrescription.getTimes().addAll(newTimes);
-
-        // Log and save
-        ActionLogger.log(nurse.getId(), "UPDATE_PRESCRIPTION",
-                "Prescription " + oldPrescription.getId() + " updated for resident " + resident.getId());
-        SerializingService.saveRecordsInFile(this);
-
-        System.out.println("Prescription updated successfully for resident " + resident.getName());
-    }
-
     public Map<String, Resident> getAllResidents() {
         return Map.copyOf(residentList);
     }
@@ -394,4 +457,19 @@ public class HealthCareHome implements Serializable {
     public AuditLog getAudit() {
         return audit;
     }
+
+    public Resident getResidentInBed(String bedId) {
+        Bed bed = bedList.get(bedId);
+        if (bed == null) {
+            return null;
+        }
+
+        String residentId = bed.getResident().getId();
+        if (residentId == null || residentId.isEmpty()) {
+            return null;
+        }
+
+        return residentList.get(residentId);
+    }
+
 }

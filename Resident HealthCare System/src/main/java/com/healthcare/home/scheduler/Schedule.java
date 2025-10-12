@@ -35,4 +35,8 @@ public class Schedule implements Serializable {
                 .anyMatch(s -> !time.isBefore(s.getStart()) && !time.isAfter(s.getEnd()));
     }
 
+    public Map<String, List<Shift>> getDailyRoster() {
+        return Collections.unmodifiableMap(dailyRoster);
+    }
+
 }

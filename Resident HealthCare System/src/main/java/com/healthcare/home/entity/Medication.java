@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Medication implements Serializable {
-    private final String prescriptionId;
-    private final String nurseId;
-    private final LocalDateTime at;
-    private final String dose;
+    private String prescriptionId;
+    private String nurseId;
+    private LocalDateTime at;
+    private String dose;
+
+    public Medication(){};
 
     public Medication(String prescriptionId, String nurseId, LocalDateTime at, String dose) {
         this.prescriptionId = prescriptionId;

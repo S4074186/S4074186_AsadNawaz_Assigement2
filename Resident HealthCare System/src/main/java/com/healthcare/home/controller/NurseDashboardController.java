@@ -3,51 +3,72 @@ package com.healthcare.home.controller;
 import com.healthcare.home.auth.Access;
 import com.healthcare.home.core.HealthCareHome;
 import com.healthcare.home.entity.Bed;
-import com.healthcare.home.staff.*;
+import com.healthcare.home.entity.Prescription;
+import com.healthcare.home.entity.Resident;
+import com.healthcare.home.staff.Nurse;
+import com.healthcare.home.staff.Staff;
 import com.healthcare.home.util.ActionLogger;
 import com.healthcare.home.util.AuthService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.geometry.Insets;
-import javafx.application.Platform;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 public class NurseDashboardController extends BaseDashboardController {
     private Staff staff;
 
-    @FXML private TableView<com.healthcare.home.controller.ManagerDashboardController.BedRow> bedTable;
-    @FXML private TableColumn<com.healthcare.home.controller.ManagerDashboardController.BedRow, String> colBedId;
-    @FXML private TableColumn<com.healthcare.home.controller.ManagerDashboardController.BedRow, String> colResident;
-    @FXML private Button moveBtn;
-    @FXML private Button administerBtn;
+    @FXML
+    private TableView<ManagerDashboardController.BedRow> bedTable;
+    @FXML
+    private TableColumn<ManagerDashboardController.BedRow, String> colBedId;
+    @FXML
+    private TableColumn<ManagerDashboardController.BedRow, String> colResident;
+    @FXML
+    private TableColumn<ManagerDashboardController.BedRow, String> colPrescription;
+    @FXML
+    private Button moveBtn;
+    @FXML
+    private Button administerBtn;
 
     public void init(HealthCareHome home, Staff staff) {
         this.staff = staff;
         setHome(home);
-        setupTable(); refreshBeds();
+        setupTable();
+        refreshBeds();
         moveBtn.setVisible(staff.has(Access.MOVE_RESIDENT));
         administerBtn.setVisible(staff.has(Access.ADMINISTER_MEDICATION));
     }
 
-    private void setupTable() {
-        colBedId.setCellValueFactory(c -> javafx.beans.property.SimpleStringProperty.stringExpression(c.getValue().bedId));
-        colResident.setCellValueFactory(c -> javafx.beans.property.SimpleStringProperty.stringExpression(c.getValue().residentName));
+    private HealthCareHome getHome() {
+        return (HealthCareHome) super.home;
     }
 
     private void refreshBeds() {
         ObservableList<ManagerDashboardController.BedRow> rows = FXCollections.observableArrayList();
-        for (Bed b : home.getBedList().values()) {
+        for (Bed b : getHome().getBedList().values()) {
             String rn = b.isVacant() ? "" : b.getResident().getName();
-            rows.add(new com.healthcare.home.controller.ManagerDashboardController.BedRow(b.getId(), rn, b.isVacant() ? null : b.getResident().getGender()));
+            ManagerDashboardController.BedRow row =
+                    new ManagerDashboardController.BedRow(b.getId(), rn, b.isVacant() ? null : b.getResident().getGender());
+            row.residentId = b.isVacant() ? "" : b.getResident().getId();
+            rows.add(row);
         }
         bedTable.setItems(rows);
     }
 
-    @FXML public void onMove() {
+    private void setupTable() {
+        setupCommonColumns(colBedId, colResident, colPrescription);
+    }
+
+    // Allow nurse to move resident to another bed
+    @FXML
+    public void onMove() {
         try {
             AuthService.authorizeOrThrow(staff, Access.MOVE_RESIDENT);
         } catch (SecurityException se) {
@@ -57,22 +78,41 @@ public class NurseDashboardController extends BaseDashboardController {
 
         ManagerDashboardController.BedRow sel = bedTable.getSelectionModel().getSelectedItem();
         if (sel == null) {
-            showAlert("Select source bed");
+            showAlert("Select source bed first");
             return;
         }
-        TextInputDialog dlg = new TextInputDialog();
+
+        // Collect vacant beds
+        var vacantBeds = getHome().getBedList().values().stream()
+                .filter(Bed::isVacant)
+                .map(Bed::getId)
+                .toList();
+
+        if (vacantBeds.isEmpty()) {
+            showAlert("No vacant beds available right now");
+            return;
+        }
+
+        ChoiceDialog<String> dlg = new ChoiceDialog<>(vacantBeds.get(0), vacantBeds);
         dlg.setTitle("Move Resident");
-        dlg.setHeaderText("Enter destination bed id");
+        dlg.setHeaderText("Move resident from Bed " + sel.bedId.get());
+        dlg.setContentText("Select destination bed:");
+
         dlg.showAndWait().ifPresent(dest -> {
             try {
-                home.moveResidentToNewBed((Nurse) staff, String.valueOf(sel.bedId.get()), dest.trim());
-                ActionLogger.log(staff.getId(), "MOVE_RESIDENT", "Moved resident from " + sel.bedId.get() + " to " + dest.trim());
+                getHome().moveResidentToNewBed((Nurse) staff, String.valueOf(sel.bedId.get()), dest);
+                ActionLogger.log(staff.getId(), "MOVE_RESIDENT",
+                        "Moved resident from " + sel.bedId.get() + " to " + dest);
                 refreshBeds();
-                showAlert("Moved");
-            } catch (Exception ex) { showAlert(ex.getMessage()); }
+                showAlert("Resident moved to bed " + dest + " successfully!");
+            } catch (Exception ex) {
+                showAlert("Error: " + ex.getMessage());
+            }
         });
     }
 
+
+    // Nurse administers medication (no need to manually enter prescriptionId)
     @FXML
     public void onAdminister() {
         try {
@@ -82,60 +122,52 @@ public class NurseDashboardController extends BaseDashboardController {
             return;
         }
 
-        ManagerDashboardController.BedRow sel = bedTable.getSelectionModel().getSelectedItem();
-        if (sel == null) {
-            showAlert("Select a bed with a resident first");
+        ManagerDashboardController.BedRow selected = bedTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Select a bed that has a resident first");
             return;
         }
 
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Administer Medication");
-        dialog.setHeaderText("Enter Medication Administration Details");
-
-        ButtonType adminButtonType = new ButtonType("Administer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(adminButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField prescriptionIdField = new TextField();
-        prescriptionIdField.setPromptText("Prescription ID");
-
-        TextField doseField = new TextField();
-        doseField.setPromptText("Dose Given (e.g., 1 tablet)");
-
-        grid.add(new Label("Prescription ID:"), 0, 0);
-        grid.add(prescriptionIdField, 1, 0);
-        grid.add(new Label("Dose:"), 0, 1);
-        grid.add(doseField, 1, 1);
-
-        dialog.getDialogPane().setContent(grid);
-        Platform.runLater(prescriptionIdField::requestFocus);
-
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isPresent() && result.get() == adminButtonType) {
-            try {
-                String prescriptionId = prescriptionIdField.getText().trim();
-                String dose = doseField.getText().trim();
-
-                if (prescriptionId.isEmpty() || dose.isEmpty()) {
-                    showAlert("Both fields are required!");
-                    return;
-                }
-
-                home.administerMedication((Nurse) staff, prescriptionId, dose);
-                ActionLogger.log(staff.getId(), "ADMINISTER_MEDICATION", "Administered " + dose + " for prescription " + prescriptionId);
-                showAlert("Medication administered successfully!");
-
-            } catch (Exception ex) {
-                showAlert("Error: " + ex.getMessage());
-            }
+        Resident resident = getHome().getResidentInBed(String.valueOf(selected.bedId.get()));
+        if (resident == null) {
+            showAlert("No resident found in this bed");
+            return;
         }
+
+        if (resident.getPrescriptionList() == null || resident.getPrescriptionList().isEmpty()) {
+            showAlert("No prescription found for this resident");
+            return;
+        }
+
+        // Create medicine selection dialog
+        List<String> medNames = resident.getPrescriptionList().stream()
+                .map(p -> p.getMedicine() + " (" + p.getDose() + ")")
+                .toList();
+
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(medNames.get(0), medNames);
+        dialog.setTitle("Administer Medicine");
+        dialog.setHeaderText("Select medicine to administer");
+        dialog.setContentText("Medicine:");
+        dialog.showAndWait().ifPresent(selectedMed -> {
+            String medName = selectedMed.split(" ")[0];
+            for (Prescription p : resident.getPrescriptionList()) {
+                if (p.getMedicine().equalsIgnoreCase(medName)) {
+                    p.administer(staff.getId()); // mark as administered
+                    ActionLogger.log(staff.getId(), "ADMINISTER_MEDICINE",
+                            "Administered " + medName + " to resident " + resident.getName());
+                    showAlert("Dose administered for " + medName);
+                    break;
+                }
+            }
+            getHome().saveAllStateToFile(null);
+            refreshBeds();
+        });
     }
 
+
+
     private void showAlert(String m) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION, m); a.showAndWait();
+        Alert a = new Alert(Alert.AlertType.INFORMATION, m);
+        a.showAndWait();
     }
 }

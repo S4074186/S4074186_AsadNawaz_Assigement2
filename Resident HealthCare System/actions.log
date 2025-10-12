@@ -2,3 +2,15 @@
 2025-10-12 20:34:59 | staff:SYSTEM | action:SAVE_HOME | Saved home to healthcarehome.dat
 2025-10-12 20:57:28 | staff:MGR1 | action:ADD_RESIDENT | Assigned resident R! to bed W1-R101-B1
 2025-10-12 21:33:31 | staff:D1 | action:WRITE_PRESCRIPTION | Prescription 1 for resident R!
+2025-10-12 23:37:47 | staff:MGR1 | action:ADD_RESIDENT | Assigned resident R1 to bed W1-R101-B1
+2025-10-12 23:38:09 | staff:MGR1 | action:ADD_RESIDENT | Assigned resident R2 to bed W1-R101-B2
+2025-10-12 23:39:14 | staff:MGR1 | action:ADD_STAFF | Added staff S1 role MANAGER
+2025-10-12 23:40:47 | staff:D1 | action:WRITE_PRESCRIPTION | Prescription PRE-001 for resident R1
+2025-10-13 01:13:41 | staff:RES-001 | action:ADD_RESIDENT | Assigned resident RES-001 to bed W1-R101-B1
+2025-10-13 01:13:58 | staff:RES-001 | action:ADD_RESIDENT | Assigned resident RES-002 to bed W1-R101-B2
+2025-10-13 01:14:49 | staff:RES-003 | action:WRITE_PRESCRIPTION | Prescription PRE-001 for resident RES-001
+2025-10-13 01:21:21 | staff:RES-001 | action:VIEW_RESIDENT | Viewed resident RES-001 from bed W1-R101-B1
+2025-10-13 01:21:28 | staff:RES-001 | action:VIEW_RESIDENT | Viewed resident RES-002 from bed W1-R101-B2
+2025-10-13 01:26:32 | staff:RES-004 | action:ADMINISTER_MEDICATION | Administered 2 tablet for Panadol to resident test
+2025-10-13 01:27:14 | staff:RES-004 | action:ADMINISTER_MEDICATION | Administered 2 for Panadol to resident test
+2025-10-13 01:36:30 | staff:RES-004 | action:ADMINISTER_MEDICATION | Administered 2 tablet for Panadol to resident test

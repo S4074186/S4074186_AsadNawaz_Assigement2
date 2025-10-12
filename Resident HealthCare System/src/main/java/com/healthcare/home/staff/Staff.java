@@ -6,14 +6,15 @@ import com.healthcare.home.entity.Role;
 import com.healthcare.home.auth.Access;
 
 public abstract class Staff implements Serializable {
+    private static long idCounter = 0;
     private final String id;
     private String name;
     private final Role role;
     private final String username;
     private String passwordHash;
 
-    protected Staff(String id, String name, Role role, String username, String passwordHash) {
-        this.id = id;
+    protected Staff(String name, Role role, String username, String passwordHash) {
+        this.id = this.generateId();
         this.name = name;
         this.role = role;
         this.username = username;
@@ -57,7 +58,22 @@ public abstract class Staff implements Serializable {
             case DOCTOR -> access == Access.VIEW_RESIDENT ||
                     access == Access.WRITE_PRESCRIPTION;
             case NURSE -> access == Access.VIEW_RESIDENT ||
+                    access == Access.MOVE_RESIDENT ||
                     access == Access.ADMINISTER_MEDICATION;
         };
     }
+
+    private synchronized String generateId() {
+        idCounter++;
+        return String.format("RES-%03d", idCounter);
+    }
+
+    public static void setIdCounter(long lastId) {
+        idCounter = lastId;
+    }
+
+    public static long getIdCounter() {
+        return idCounter;
+    }
+
 }

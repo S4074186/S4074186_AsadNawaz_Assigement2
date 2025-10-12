@@ -27,9 +27,10 @@ com\healthcare\home\controller\BaseDashboardController.class
 com\healthcare\home\entity\Prescription.class
 com\healthcare\home\audit\AuditLog.class
 com\healthcare\home\entity\Bed.class
+com\healthcare\home\controller\BaseDashboardController$1.class
 com\healthcare\home\controller\NurseDashboardController.class
+com\healthcare\home\controller\BaseDashboardController$2.class
 com\healthcare\home\exceptions\BedNotAvailableException.class
 com\healthcare\home\auth\Access.class
 com\healthcare\home\scheduler\Schedule.class
-com\healthcare\home\controller\ManagerDashboardController$1.class
 com\healthcare\home\staff\Manager.class

@@ -18,8 +18,9 @@
     <center>
         <TableView fx:id="bedTable" prefWidth="600" prefHeight="400">
             <columns>
-                <TableColumn fx:id="colBedId" text="Bed ID" prefWidth="150"/>
-                <TableColumn fx:id="colResident" text="Resident" prefWidth="300"/>
+                <TableColumn fx:id="colBedId" text="Bed ID" prefWidth="200"/>
+                <TableColumn fx:id="colResident" text="Resident" prefWidth="200"/>
+                <TableColumn fx:id="colPrescription" text="Prescription" prefWidth="200"/>
             </columns>
         </TableView>
     </center>

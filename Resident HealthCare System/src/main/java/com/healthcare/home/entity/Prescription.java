@@ -1,6 +1,7 @@
 package com.healthcare.home.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,5 +67,36 @@ public class Prescription implements Serializable {
 
     public List<Medication> getAdministrations() {
         return administrations;
+    }
+
+    /**
+     * Called when a nurse administers a medicine.
+     * Records the administration in the administrations list.
+     */
+    /**
+     * Called when a nurse administers a medicine.
+     * Records the administration in the administrations list.
+     */
+    public void administer(String nurseId) {
+        Medication med = new Medication(
+                this.id,
+                nurseId,
+                LocalDateTime.now(),
+                this.dose
+        );
+        administrations.add(med);
+    }
+
+
+    @Override
+    public String toString() {
+        return "Prescription{" +
+                "id='" + id + '\'' +
+                ", doctorId='" + doctorId + '\'' +
+                ", medicine='" + medicine + '\'' +
+                ", dose='" + dose + '\'' +
+                ", times=" + times +
+                ", administrations=" + administrations +
+                '}';
     }
 }

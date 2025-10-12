@@ -1,17 +1,19 @@
 package com.healthcare.home.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Resident implements Serializable {
+    private static long idCounter = 0;
     private String id;
     private String name;
     private Gender gender;
     private boolean isolation;
     private String bedId;
-    private Prescription prescription;
+    private List<Prescription> prescriptionList;
 
-    public Resident(String id, String name, Gender gender, boolean isolation, String bedId) {
-        this.id = id;
+    public Resident(String name, Gender gender, boolean isolation, String bedId) {
+        this.id = generateId();;
         this.name = name;
         this.gender = gender;
         this.isolation = isolation;
@@ -58,11 +60,24 @@ public class Resident implements Serializable {
         this.bedId = bedId;
     }
 
-    public Prescription getPrescription() {
-        return prescription;
+    public List<Prescription> getPrescriptionList() {
+        return prescriptionList;
     }
 
-    public void setPrescription(Prescription prescription) {
-        this.prescription = prescription;
+    public void setPrescriptionList(List<Prescription> prescriptionList) {
+        this.prescriptionList = prescriptionList;
+    }
+
+    private synchronized String generateId() {
+        idCounter++;
+        return String.format("RES-%03d", idCounter);
+    }
+
+    public static void setIdCounter(long lastId) {
+        idCounter = lastId;
+    }
+
+    public static long getIdCounter() {
+        return idCounter;
     }
 }
