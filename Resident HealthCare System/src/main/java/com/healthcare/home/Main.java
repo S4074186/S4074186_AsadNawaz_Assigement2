@@ -197,7 +197,7 @@ public class Main extends Application {
 
     @Override
     public void stop () {
-        SerializingService.save(home);
+        SerializingService.saveRecordsInFile(home);
     }
 
 }

@@ -7,6 +7,7 @@ import com.healthcare.home.auth.Access;
 import com.healthcare.home.scheduler.Schedule;
 import com.healthcare.home.scheduler.Shift;
 import com.healthcare.home.staff.*;
+import com.healthcare.home.util.ActionLogger;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -173,7 +174,7 @@ public class HealthCareHome implements Serializable {
         if (resident == null) throw new ResidentNotFoundException("No resident in bed");
 
         prescriptionList.put(prescription.getId(), prescription);
-        resident.getPrescriptions().add(prescription);
+        resident.setPrescription(prescription);
         audit.entryLog(doctor.getId(), Access.WRITE_PRESCRIPTION, "Prescription " + prescription.getId() + " added for resident " + resident.getId());
     }
 
@@ -278,7 +279,7 @@ public class HealthCareHome implements Serializable {
             // write resident object
             oos.writeObject(resident);
             // also write all prescriptions for resident for completeness
-            List<Prescription> pres = resident.getPrescriptions();
+            Prescription pres = resident.getPrescription();
             oos.writeObject(pres);
             oos.flush();
         }
@@ -354,5 +355,43 @@ public class HealthCareHome implements Serializable {
     private void requireOnDutyStaff(Staff s) {
         if (!scheduler.isAvailableOnDuty(s, LocalDateTime.now()))
             throw new UnAuthorizationException("Staff not rostered at this time");
+    }
+
+    public void updateResidentPrescription(Nurse nurse, Resident resident,
+                                           String newMedicine, String newDose, List<String> newTimes) {
+        Prescription oldPrescription = resident.getPrescription();
+        if (oldPrescription == null) {
+            System.out.println("No prescription found for resident " + resident.getName());
+            return;
+        }
+
+        // Update fields
+        oldPrescription.setMedicine(newMedicine);
+        oldPrescription.setDose(newDose);
+        oldPrescription.getTimes().clear();
+        oldPrescription.getTimes().addAll(newTimes);
+
+        // Log and save
+        ActionLogger.log(nurse.getId(), "UPDATE_PRESCRIPTION",
+                "Prescription " + oldPrescription.getId() + " updated for resident " + resident.getId());
+        SerializingService.saveRecordsInFile(this);
+
+        System.out.println("Prescription updated successfully for resident " + resident.getName());
+    }
+
+    public Map<String, Resident> getAllResidents() {
+        return Map.copyOf(residentList);
+    }
+
+    public Map<String, Prescription> getPrescriptionList() {
+        return prescriptionList;
+    }
+
+    public Schedule getScheduler() {
+        return scheduler;
+    }
+
+    public AuditLog getAudit() {
+        return audit;
     }
 }

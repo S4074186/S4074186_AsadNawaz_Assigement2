@@ -22,7 +22,7 @@ public abstract class BaseDashboardController {
             // save all patient related records before logout
             try {
                 if (home != null) {
-                    SerializingService.save(home);
+                    SerializingService.saveRecordsInFile(home);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

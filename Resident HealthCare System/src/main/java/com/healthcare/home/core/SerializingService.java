@@ -1,5 +1,7 @@
 package com.healthcare.home.core;
 
+import com.healthcare.home.entity.Prescription;
+import com.healthcare.home.entity.Resident;
 import com.healthcare.home.scheduler.Shift;
 import com.healthcare.home.staff.Doctor;
 import com.healthcare.home.staff.Manager;
@@ -8,6 +10,7 @@ import com.healthcare.home.staff.Nurse;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 public class SerializingService {
 
@@ -18,9 +21,6 @@ public class SerializingService {
                      new ObjectOutputStream(Files.newOutputStream(HEALTH_CARE_SYSTEM_FILE))) {
             outputStream.writeObject(home);
             System.out.println("Records saved to file: " + HEALTH_CARE_SYSTEM_FILE);
-
-            // Save the current ID counter
-            saveIdCounter();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -40,92 +40,32 @@ public class SerializingService {
             LocalDateTime now = LocalDateTime.now();
             home.assigningShift(manager, doctor, new Shift(now, now.plusHours(8)));
             home.assigningShift(manager, nurse, new Shift(now, now.plusHours(8)));
-
-            PrescriptionIdGenerator.reset(); // reset ID counter
             return home;
         }
 
         try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(HEALTH_CARE_SYSTEM_FILE))) {
             HealthCareHome home = (HealthCareHome) inputStream.readObject();
 
-            // Load ID counter from file
-            loadIdCounter();
+            // restore prescription id counter
+            long maxId = 0;
+            Collection<Resident> residents = home.getAllResidents().values();
+            for (Resident r : residents) {
+                Prescription p = r.getPrescription();
+                String numPart = p.getId().replace("PRE-", "");
+                long num = Long.parseLong(numPart);
+                if (num > maxId) {
+                    maxId = num;
+                }
+            }
 
+            Prescription.setIdCounter(maxId);
+
+            System.out.println("Loaded existing data from file. Prescription counter restored to PRE-" + maxId);
             return home;
+
         } catch (Exception e) {
-            System.err.println("Loading existing records from file "
-                    + HEALTH_CARE_SYSTEM_FILE
-                    + " failed, creating new one: "
-                    + e.getMessage());
-            PrescriptionIdGenerator.reset();
+            System.err.println("Loading existing records failed, creating new one: " + e.getMessage());
             return new HealthCareHome();
         }
     }
-
-    public static void save(Object o) {
-        try {
-            Files.createDirectories(
-                    HEALTH_CARE_SYSTEM_FILE.getParent() == null ? Path.of(".") : HEALTH_CARE_SYSTEM_FILE.getParent());
-            try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(HEALTH_CARE_SYSTEM_FILE))) {
-                out.writeObject(o);
-            }
-            saveIdCounter();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Object load() {
-        try {
-            if (!Files.exists(HEALTH_CARE_SYSTEM_FILE)) return null;
-            try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(HEALTH_CARE_SYSTEM_FILE))) {
-                Object data = in.readObject();
-                loadIdCounter();
-                return data;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static final Path COUNTER_FILE = Paths.get("prescriptionCounter.dat");
-
-    private static void saveIdCounter() {
-        try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(COUNTER_FILE))) {
-            out.writeInt(PrescriptionIdGenerator.getCurrentId());
-        } catch (IOException e) {
-            System.err.println("Failed to save ID counter: " + e.getMessage());
-        }
-    }
-
-    private static void loadIdCounter() {
-        if (!Files.exists(COUNTER_FILE)) return;
-        try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(COUNTER_FILE))) {
-            int lastId = in.readInt();
-            PrescriptionIdGenerator.setCurrentId(lastId);
-        } catch (IOException e) {
-            System.err.println("Failed to load ID counter: " + e.getMessage());
-        }
-    }
-
-    public static class PrescriptionIdGenerator {
-        private static int currentId = 1;
-
-        public static synchronized String nextId() {
-            return String.valueOf(currentId++);
-        }
-
-        public static int getCurrentId() {
-            return currentId;
-        }
-
-        public static void setCurrentId(int id) {
-            currentId = id;
-        }
-
-        public static void reset() {
-            currentId = 1;
-        }
-    }
-
 }

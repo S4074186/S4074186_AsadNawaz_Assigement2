@@ -120,11 +120,11 @@ public class DoctorDashboardController extends BaseDashboardController {
 
                 Prescription prescription = new Prescription(
                         staff.getId(),
-                        resident.getId(),
                         med,
                         dose,
                         timeList
                 );
+                resident.setPrescription(prescription);
 
                 home.writePrescription((Doctor) staff, String.valueOf(sel.bedId.get()), prescription);
                 ActionLogger.log(staff.getId(), "WRITE_PRESCRIPTION", "Prescription " + prescription.getId() + " for resident " + resident.getId());

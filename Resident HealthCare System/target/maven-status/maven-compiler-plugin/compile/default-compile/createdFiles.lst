@@ -26,7 +26,6 @@ com\healthcare\home\scheduler\Schedule$ShiftAssignment.class
 com\healthcare\home\controller\BaseDashboardController.class
 com\healthcare\home\entity\Prescription.class
 com\healthcare\home\audit\AuditLog.class
-com\healthcare\home\core\SerializingService$PrescriptionIdGenerator.class
 com\healthcare\home\entity\Bed.class
 com\healthcare\home\controller\NurseDashboardController.class
 com\healthcare\home\exceptions\BedNotAvailableException.class

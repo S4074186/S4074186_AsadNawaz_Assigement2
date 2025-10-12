@@ -1,47 +1,68 @@
 package com.healthcare.home.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Resident implements Serializable {
-
-    private final String id;
-    private final String name;
+    private String id;
+    private String name;
     private Gender gender;
-    private boolean requiresIsolation;
-    private final List<Prescription> prescriptions = new ArrayList<>();
+    private boolean isolation;
+    private String bedId;
+    private Prescription prescription;
 
-    public Resident(String id, String name, Gender gender, boolean requiresIsolation) {
+    public Resident(String id, String name, Gender gender, boolean isolation, String bedId) {
         this.id = id;
         this.name = name;
         this.gender = gender;
-        this.requiresIsolation = requiresIsolation;
-    }
-
-    public Resident(String id, String name) {
-        this.id = id;
-        this.name = name;
+        this.isolation = isolation;
+        this.bedId = bedId;
     }
 
     public String getId() {
         return id;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Gender getGender() {
         return gender;
     }
-    public boolean requiresIsolation() {
-        return requiresIsolation;
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
-    public boolean isRequiresIsolation() {
-        return requiresIsolation;
+    public boolean isIsolation() {
+        return isolation;
     }
 
-    public List<Prescription> getPrescriptions() {
-        return prescriptions;
+    public void setIsolation(boolean isolation) {
+        this.isolation = isolation;
+    }
+
+    public String getBedId() {
+        return bedId;
+    }
+
+    public void setBedId(String bedId) {
+        this.bedId = bedId;
+    }
+
+    public Prescription getPrescription() {
+        return prescription;
+    }
+
+    public void setPrescription(Prescription prescription) {
+        this.prescription = prescription;
     }
 }

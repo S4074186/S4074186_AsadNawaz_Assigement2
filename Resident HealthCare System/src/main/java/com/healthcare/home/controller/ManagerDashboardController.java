@@ -169,7 +169,8 @@ public class ManagerDashboardController extends BaseDashboardController {
                         id,
                         name,
                         "MALE".equalsIgnoreCase(gender) ? Gender.MALE : Gender.FEMALE,
-                        "YES".equalsIgnoreCase(isolation)
+                        "YES".equalsIgnoreCase(isolation),
+                        sel.getBedId()
                 );
 
                 home.assignResidentToBed(staff, String.valueOf(sel.bedId.get()), resident);
