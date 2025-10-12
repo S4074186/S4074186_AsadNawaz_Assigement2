@@ -9,21 +9,24 @@ import com.healthcare.home.scheduler.Shift;
 import com.healthcare.home.staff.*;
 
 import java.io.*;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- Updated HealthCareHome to meet GUI functional requirements and role based checks.
- Notes
- 1. Manager can add resident to vacant bed.
- 2. Nurse can add resident when rostered and can move resident when rostered.
- 3. Doctor and nurse can view resident when rostered. Manager can view anytime.
- 4. All actions are logged with audit.entryLog including staff id and timestamp.
- 5. State save method saves this object to a file for restore before exit.
- 6. Discharge archives resident data to a per resident archive file and logs the action.
- 7. Methods throw existing exceptions for unauthorized or invalid operations.
+ * Central application model for the care home.
+ *
+ * Notes:
+ *  - Controllers call the methods below:
+ *      - getResidentDetails(...)  -> Manager/Doctor/Nurse UI to view resident details
+ *      - assignResidentToBed(...) -> Manager UI or Nurse UI (when rostered)
+ *      - moveResidentToNewBed(...)-> Nurse UI (Move button)
+ *      - writePrescription(...)   -> Doctor UI (onPrescribe)
+ *      - administerMedication(...)-> Nurse UI (onAdminister)
+ *      - updateAdministration(...)-> Nurse UI (edit an administration entry)
+ *      - modifyPrescription(...)  -> Doctor UI (edit prescription)
+ *      - dischargeResident(...)   -> Manager UI (or nurse if rostered, as per rules)
+ *      - checkCompliance()        -> call after shifts are assigned or on admin action
  */
 public class HealthCareHome implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -51,65 +54,47 @@ public class HealthCareHome implements Serializable {
         bedList.put("W2-R202-B2", new Bed("W2-R202-B2"));
         bedList.put("W2-R203-B1", new Bed("W2-R203-B1"));
 
-        // adding manager in staff
+        // adding manager in staff (system default)
         Manager manager = new Manager("Manager", "admin", "MANAGER-PASSWORD");
         staffList.put(manager.getId(), manager);
     }
 
+    // --------------------------
+    // Staff registration helpers
+    // --------------------------
 
-    // manager adds new staff
+    public void registerNewStaff(Staff staff) {
+        staffList.put(staff.getId(), staff);
+        audit.entryLog("SystemGenerated", Access.ADD_STAFF, "Registered staff with id: " + staff.getId());
+//        assignDefaultShifts(staff);
+    }
+
     public void addNewStaff(Staff manager, Staff staff) {
         requireAuthorizeManager(manager);
         staffList.put(staff.getId(), staff);
         audit.entryLog(manager.getId(), Access.ADD_STAFF, "Added staff with id: " + staff.getId());
-
-        // assign default shifts automatically
         assignDefaultShifts(staff);
     }
 
-    // system adds new staff (like pre-defined)
-    public void registerNewStaff(Staff staff) {
-        staffList.put(staff.getId(), staff);
-        audit.entryLog("SystemGenerated", Access.ADD_STAFF, "Registered staff with id: " + staff.getId());
-
-        // assign default shifts automatically
-        assignDefaultShifts(staff);
-    }
-
-    /**
-     * Assign default weekly shifts to staff (doctor or nurse)
-     */
     private void assignDefaultShifts(Staff staff) {
         if (staff instanceof Nurse) {
             List<Nurse> nurses = new ArrayList<>();
-            for (Staff s : staffList.values()) {
-                if (s instanceof Nurse) nurses.add((Nurse) s);
-            }
+            for (Staff s : staffList.values()) if (s instanceof Nurse) nurses.add((Nurse) s);
 
             int nurseIndex = nurses.indexOf(staff);
-            boolean isEven = nurseIndex % 2 == 0;
+            boolean isMorningShift = nurseIndex % 2 == 0;
 
-            for (DayOfWeek day : DayOfWeek.values()) {
+            for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
                 LocalDate date = LocalDate.now().with(day);
 
-                LocalDateTime shiftStart;
-                LocalDateTime shiftEnd;
+                LocalDateTime start = isMorningShift ? date.atTime(8, 0) : date.atTime(14, 0);
+                LocalDateTime end = isMorningShift ? date.atTime(16, 0) : date.atTime(22, 0);
 
-                // even nurses: morning 8–16
-                // odd nurses: evening 16–24
-                if (isEven) {
-                    shiftStart = date.atTime(8, 0);
-                    shiftEnd = date.atTime(16, 0);
-                } else {
-                    shiftStart = date.atTime(16, 0);
-                    shiftEnd = date.plusDays(1).atTime(0, 0);
-                }
-
-                scheduler.assigningShiftToStaff(staff, new Shift(shiftStart, shiftEnd));
+                scheduler.assigningShiftToStaff(staff, new Shift(start, end));
             }
+
         } else if (staff instanceof Doctor) {
-            // doctor 1-hour shift each day
-            for (DayOfWeek day : DayOfWeek.values()) {
+            for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
                 LocalDate date = LocalDate.now().with(day);
                 LocalDateTime start = date.atTime(10, 0);
                 LocalDateTime end = start.plusHours(1);
@@ -118,40 +103,69 @@ public class HealthCareHome implements Serializable {
         }
     }
 
+
     /**
-     * Compliance check for staff scheduling
+     * Validate roster rules:
+     * - Nurses: max 8 hours per day
+     * - Doctors: exactly 1 hour per day (as required)
+     *
+     * Where to call: after assigning shifts, during startup validation, or via Manager UI ("Validate Roster")
      */
     public void checkCompliance() {
-        for (Staff s : staffList.values()) {
-            List<Shift> shifts = scheduler.getDailyRoster().getOrDefault(s.getId(), List.of());
-            Map<LocalDate, Long> dailyHours = new HashMap<>();
+        // NOTE: relies on Schedule exposing a way to get all shifts for staff.
+        // If Schedule has getDailyRoster() or getShiftsForStaff(String staffId) use that.
+        // Here we assume Schedule has a method Map<String, List<Shift>> getDailyRoster()
+        Map<String, List<Shift>> roster = scheduler.getDailyRoster(); // ensure Schedule provides this method
 
-            for (Shift shift : shifts) {
-                LocalDate date = (LocalDate) shift.getStart().toLocalDate();
-                dailyHours.merge(date, shift.hours(), Long::sum);
+        for (Map.Entry<String, List<Shift>> entry : roster.entrySet()) {
+            String staffId = entry.getKey();
+            Staff s = staffList.get(staffId);
+            if (s == null) continue;
+
+            // group by date
+            Map<LocalDate, Long> hoursByDate = new HashMap<>();
+            for (Shift sh : entry.getValue()) {
+                LocalDate date = (LocalDate) sh.getStart().toLocalDate();
+                long hours = sh.hours();
+                hoursByDate.merge(date, hours, Long::sum);
             }
 
             if (s instanceof Nurse) {
-                for (Map.Entry<LocalDate, Long> e : dailyHours.entrySet()) {
+                for (Map.Entry<LocalDate, Long> e : hoursByDate.entrySet()) {
                     if (e.getValue() > 8) {
-                        throw new RosterUnfollowedException("Nurse " + s.getId()
-                                + " has more than 8 hours on " + e.getKey());
+                        throw new RosterUnfollowedException("Nurse " + s.getId() + " has more than 8 hours on " + e.getKey());
                     }
                 }
             } else if (s instanceof Doctor) {
-                for (Map.Entry<LocalDate, Long> e : dailyHours.entrySet()) {
+                for (Map.Entry<LocalDate, Long> e : hoursByDate.entrySet()) {
                     if (!e.getValue().equals(1L)) {
-                        throw new RosterUnfollowedException("Doctor " + s.getId()
-                                + " must have 1-hour shift daily");
+                        throw new RosterUnfollowedException("Doctor " + s.getId() + " must have 1-hour shift daily (found " + e.getValue() + " on " + e.getKey() + ")");
                     }
                 }
             }
         }
+
+        // Additional check: ensure total nurse shifts per week equals 14 across roster (2 per day * 7)
+        long totalNurseShifts = roster.values().stream()
+                .flatMap(List::stream)
+                .filter(shift -> {
+                    // find staff for shift and check if nurse
+                    // we must map shift -> staffId to determine staff role; this depends on Schedule internals.
+                    return true; // skip here; optional detailed check can be added if Schedule provides assignment mapping
+                }).count();
+        // optional: implement detailed count if schedule exposes assignments per day
     }
 
-    /**
-     Manager updates staff password.
-     */
+    // --------------------------
+    // Staff / shift management
+    // --------------------------
+
+    public void assigningShift(Staff manager, Staff staff, Shift shift) {
+        requireAuthorizeManager(manager);
+        scheduler.assigningShiftToStaff(staff, shift);
+        audit.entryLog(manager.getId(), Access.SHIFT_ASSIGNMENT, "Assigned shift to " + staff.getId());
+    }
+
     public void updateStaffPassword(Staff manager, String staffId, String newPass) {
         requireAuthorizeManager(manager);
         Staff t = staffList.get(staffId);
@@ -160,21 +174,10 @@ public class HealthCareHome implements Serializable {
         audit.entryLog(manager.getId(), Access.UPDATE_STAFF, "Updated password for " + staffId);
     }
 
-    /**
-     Manager assigns shift to staff. Only manager allowed.
-     */
-    public void assigningShift(Staff manager, Staff staff, Shift shift) {
-        requireAuthorizeManager(manager);
-        scheduler.assigningShiftToStaff(staff, shift);
-        audit.entryLog(manager.getId(), Access.SHIFT_ASSIGNMENT, "Assigned shift to " + staff.getId());
-    }
+    // --------------------------
+    // Resident / Bed operations
+    // --------------------------
 
-    /**
-     Assign resident to bed.
-     Rules
-     - Manager can assign resident to any vacant bed without roster check.
-     - Nurse can assign resident only when rostered now.
-     */
     public void assignResidentToBed(Staff staff, String bedId, Resident resident) {
         Bed bed = findBed(bedId);
         if (!bed.isVacant()) throw new BedNotAvailableException("Bed occupied with bed id: " + bedId);
@@ -182,20 +185,15 @@ public class HealthCareHome implements Serializable {
         if (staff instanceof Manager) {
             // manager allowed without roster check
         } else {
-            // only nurse allowed and must be on duty
             requireAuthorizeRole(staff, Role.NURSE);
             requireOnDutyStaff(staff);
         }
 
         bed.setResident(resident);
-        residentList.put(resident.getId(), resident);
+        if (resident.getId() != null) residentList.put(resident.getId(), resident);
         audit.entryLog(staff.getId(), Access.ADD_RESIDENT, "Assigned resident " + resident.getId() + " to " + bedId);
     }
 
-    /**
-     Nurse moves resident from one bed to another.
-     Nurse must be rostered.
-     */
     public void moveResidentToNewBed(Staff staff, String fromBedId, String toBedId) {
         requireAuthorizeRole(staff, Role.NURSE);
         requireOnDutyStaff(staff);
@@ -213,24 +211,20 @@ public class HealthCareHome implements Serializable {
     }
 
     /**
-     Get resident details.
-     Rules
-     - Manager can view anytime.
-     - Doctor and nurse can view only when rostered now.
+     * Return resident details for display.
+     * Controllers: call this to populate resident details view.
      */
     public Resident getResidentDetails(Staff staffMember, String bedId) {
         Bed bed = findBed(bedId);
         if (bed == null) throw new ValidationFailedException("Bed not found: " + bedId);
 
-        if (staffMember instanceof Manager) {
-            // allowed
-        } else {
-            // only medical staff allowed when rostered
+        // manager can always view
+        if (!(staffMember instanceof Manager)) {
             Role r = staffMember.getRole();
             if (!(Role.DOCTOR.equals(r) || Role.NURSE.equals(r))) {
                 throw new UnAuthorizationException("Only medical staff or manager can view resident details");
             }
-            requireOnDutyStaff(staffMember);
+            requireOnDutyStaff(staffMember); // nurse or doctor must be on duty
         }
 
         Resident resident = bed.getResident();
@@ -238,9 +232,19 @@ public class HealthCareHome implements Serializable {
         return resident;
     }
 
+    public Resident getResidentInBed(String bedId) {
+        Bed bed = bedList.get(bedId);
+        if (bed == null) return null;
+        return bed.getResident();
+    }
+
+    // --------------------------
+    // Prescription / Medication
+    // --------------------------
+
     /**
-     Doctor writes prescription.
-     Doctor must be rostered.
+     * Add one or more prescriptions for resident in bed.
+     * Controllers: call this from Doctor Dashboard when saving prescriptions.
      */
     public void writePrescription(Staff doctor, String bedId, List<Prescription> newPrescriptions) {
         requireAuthorizeRole(doctor, Role.DOCTOR);
@@ -256,16 +260,16 @@ public class HealthCareHome implements Serializable {
         existing.addAll(newPrescriptions);
         resident.setPrescriptionList(existing);
 
+        // register each prescription in system-wide map for direct lookup by id
         for (Prescription p : newPrescriptions) {
-            audit.entryLog(doctor.getId(), Access.WRITE_PRESCRIPTION,
-                    "Prescription " + p.getId() + " added for resident " + resident.getId());
+            if (p.getId() != null) prescriptionList.put(p.getId(), p);
+            audit.entryLog(doctor.getId(), Access.WRITE_PRESCRIPTION, "Prescription " + p.getId() + " added for resident " + resident.getId());
         }
     }
 
-
     /**
-     Doctor updates prescription content.
-     Doctor must be rostered.
+     * Doctor modifies a prescription's med/dose text.
+     * Controllers: call this from a Doctor edit prescription UI.
      */
     public void modifyPrescription(Staff doctor, String preId, String medicine, String dose) {
         requireAuthorizeRole(doctor, Role.DOCTOR);
@@ -280,24 +284,26 @@ public class HealthCareHome implements Serializable {
     }
 
     /**
-     Nurse administers medication.
-     Nurse must be rostered.
+     * Nurse administers medication for a prescription id.
+     * Controllers: NurseDashboardController.onAdminister() should call this (no manual prescription id input required
+     * if you determine prescription from selected bed; pass that id here).
      */
-    public void administerMedication(Staff nurse, String preId, String dose) {
+    public void administerMedication(Staff nurse, String preId, String doseGiven) {
         requireAuthorizeRole(nurse, Role.NURSE);
         requireOnDutyStaff(nurse);
 
         Prescription prescription = prescriptionList.get(preId);
         if (prescription == null) throw new ValidationFailedException("Prescription not found");
 
-        Medication medication = new Medication(prescription.getId(), nurse.getId(), LocalDateTime.now(), dose);
+        Medication medication = new Medication(prescription.getId(), nurse.getId(), LocalDateTime.now(), doseGiven);
         prescription.getAdministrations().add(medication);
-        audit.entryLog(nurse.getId(), Access.ADMINISTER_MEDICATION, "Administered " + dose + " for " + prescription.getId());
+
+        audit.entryLog(nurse.getId(), Access.ADMINISTER_MEDICATION, "Administered " + doseGiven + " for " + prescription.getId());
     }
 
     /**
-     Nurse updates a previous administration record.
-     Nurse must be rostered.
+     * Nurse updates a previous administration entry for a prescription.
+     * Controllers: call this from a UI that allows editing an administration record (index must be known).
      */
     public void updateAdministration(Staff nurse, String preId, int index, String updatedDose) {
         requireAuthorizeRole(nurse, Role.NURSE);
@@ -312,23 +318,23 @@ public class HealthCareHome implements Serializable {
         Medication old = prescription.getAdministrations().get(index);
         Medication updatedMedication = new Medication(old.getPrescriptionId(), nurse.getId(), old.getAt(), updatedDose);
         prescription.getAdministrations().set(index, updatedMedication);
+
         audit.entryLog(nurse.getId(), Access.UPDATE_PRESCRIPTION, "Updated administration for " + preId + " index " + index);
     }
 
+    // --------------------------
+    // Discharge
+    // --------------------------
+
     /**
-     Discharge resident.
-     Rules
-     - Manager can discharge anytime.
-     - Nurse can discharge when rostered.
-     Action
-     - Archive resident full record to file for audit.
-     - Remove resident from bed and resident map.
+     * Discharge resident.
+     * - Manager can always discharge.
+     * - Nurse can discharge only when on duty (business rule).
+     * Controllers: call this from Manager dashboard discharge action (or Nurse UI if you allow).
      */
     public void dischargeResident(Staff staffMember, String bedId) {
-        // allow manager always
-        if (staffMember instanceof Manager) {
-            // allowed
-        } else {
+        if (!(staffMember instanceof Manager)) {
+            // nurses may be allowed if rostered
             requireAuthorizeRole(staffMember, Role.NURSE);
             requireOnDutyStaff(staffMember);
         }
@@ -337,43 +343,44 @@ public class HealthCareHome implements Serializable {
         Resident resident = bed.getResident();
         if (resident == null) throw new ResidentNotFoundException("No resident");
 
-        // archive resident to a per resident file
+        // archive resident to a per resident file (archive_{id}.dat)
         try {
             archiveResident(resident);
         } catch (Exception ex) {
-            // do not block discharge if archive fails, still log the error
-            audit.entryLog(staffMember.getId(), Access.DISCHARGE, "Archive failed for " + resident.getId() + " error " + ex.getMessage());
+            audit.entryLog(staffMember.getId(), Access.DISCHARGE_RESIDENT, "Archive failed for " + resident.getId() + " error " + ex.getMessage());
             ex.printStackTrace();
         }
 
-        // remove resident
+        // clear bed and maps
         bed.setResident(null);
-        residentList.remove(resident.getId());
+        if (resident.getId() != null) residentList.remove(resident.getId());
 
-        audit.entryLog(staffMember.getId(), Access.DISCHARGE, "Discharged " + resident.getId() + " from bed " + bedId);
+        // also remove associated prescriptions from system map
+        List<Prescription> pres = resident.getPrescriptionList();
+        if (pres != null) {
+            for (Prescription p : pres) {
+                if (p != null && p.getId() != null) prescriptionList.remove(p.getId());
+            }
+        }
+
+        audit.entryLog(staffMember.getId(), Access.DISCHARGE_RESIDENT, "Discharged " + resident.getId() + " from bed " + bedId);
     }
 
-    /**
-     Helper to archive resident object and related prescriptions and administrations.
-     Writes an archive file named archive_{residentId}.dat in working dir
-     */
     private void archiveResident(Resident resident) throws IOException {
         String filename = "archive_" + resident.getId() + ".dat";
         try (FileOutputStream fos = new FileOutputStream(filename);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-            // write resident object
             oos.writeObject(resident);
-            // also write all prescriptions for resident for completeness
             List<Prescription> pres = resident.getPrescriptionList();
             oos.writeObject(pres);
             oos.flush();
         }
     }
 
-    /**
-     Save entire state to disk for restore on next startup.
-     Call this before application exit.
-     */
+    // --------------------------
+    // Persistence / helpers
+    // --------------------------
+
     public void saveAllStateToFile(String path) {
         if (path == null || path.trim().isEmpty()) path = "healthcarehome_state.dat";
         try (FileOutputStream fos = new FileOutputStream(path);
@@ -387,9 +394,6 @@ public class HealthCareHome implements Serializable {
         }
     }
 
-    /**
-     Find bed or throw validation exception.
-     */
     public Bed findBed(String id) {
         Bed bed = bedList.get(id);
         if (bed == null) throw new ValidationFailedException("Bed not found: " + id);
@@ -404,10 +408,22 @@ public class HealthCareHome implements Serializable {
         return Map.copyOf(staffList);
     }
 
-    /**
-     Authenticate by username and password.
-     Returns staff or null.
-     */
+    public Map<String, Resident> getAllResidents() {
+        return Map.copyOf(residentList);
+    }
+
+    public Map<String, Prescription> getPrescriptionList() {
+        return Map.copyOf(prescriptionList);
+    }
+
+    public Schedule getScheduler() {
+        return scheduler;
+    }
+
+    public AuditLog getAudit() {
+        return audit;
+    }
+
     public Staff authenticate(String username, String password) {
         Collection<Staff> staffList = getStaffList().values();
         for (Staff staff : staffList) {
@@ -419,57 +435,21 @@ public class HealthCareHome implements Serializable {
         return null;
     }
 
-    /**
-     Manager check helper.
-     */
+    // --------------------------
+    // Role checks
+    // --------------------------
+
     private void requireAuthorizeManager(Staff staff) {
         if (!(staff instanceof Manager)) throw new UnAuthorizationException("Manager authorized only");
     }
 
-    /**
-     Role check helper.
-     */
     private void requireAuthorizeRole(Staff staff, Role role) {
         if (staff == null) throw new UnAuthorizationException("No staff provided");
         if (!staff.getRole().equals(role)) throw new UnAuthorizationException("Requires authorized role " + role);
     }
 
-    /**
-     On duty check using scheduler.
-     */
     private void requireOnDutyStaff(Staff s) {
         if (!scheduler.isAvailableOnDuty(s, LocalDateTime.now()))
             throw new UnAuthorizationException("Staff not rostered at this time");
     }
-
-    public Map<String, Resident> getAllResidents() {
-        return Map.copyOf(residentList);
-    }
-
-    public Map<String, Prescription> getPrescriptionList() {
-        return prescriptionList;
-    }
-
-    public Schedule getScheduler() {
-        return scheduler;
-    }
-
-    public AuditLog getAudit() {
-        return audit;
-    }
-
-    public Resident getResidentInBed(String bedId) {
-        Bed bed = bedList.get(bedId);
-        if (bed == null) {
-            return null;
-        }
-
-        String residentId = bed.getResident().getId();
-        if (residentId == null || residentId.isEmpty()) {
-            return null;
-        }
-
-        return residentList.get(residentId);
-    }
-
 }

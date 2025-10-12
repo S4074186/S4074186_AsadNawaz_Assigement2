@@ -11,6 +11,8 @@ import com.healthcare.home.staff.Staff;
 
 import java.io.*;
 import java.nio.file.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,17 +38,57 @@ public class SerializingService {
             // create new system with default staff
             HealthCareHome home = new HealthCareHome();
 
-            Manager manager = new Manager("Manager", "manager", "MANAGER-PASSWORD");
-            Doctor doctor = new Doctor("Doctor", "doctor", "DOCTOR-PASSWORD");
-            Nurse nurse = new Nurse("Nurse", "nurse", "NURSE-PASSWORD");
+            Manager manager = new Manager("Manager", "admin", "admin123");
+            Doctor doctor1 = new Doctor("Doctor1", "doctor1", "doctor1");
+            Nurse nurse1 = new Nurse("Nurse1", "nurse1", "nurse1");
+            Nurse nurse2 = new Nurse("Nurse2", "nurse2", "nurse2");
+            Nurse nurse3 = new Nurse("Nurse3", "nurse3", "nurse3");
+            Nurse nurse4 = new Nurse("Nurse4", "nurse4", "nurse4");
+            Nurse nurse5 = new Nurse("Nurse5", "nurse5", "nurse5");
+            Nurse nurse6 = new Nurse("Nurse6", "nurse6", "nurse6");
+            Nurse nurse7 = new Nurse("Nurse7", "nurse7", "nurse7");
+            Nurse nurse8 = new Nurse("Nurse8", "nurse8", "nurse8");
 
             home.registerNewStaff(manager);
-            home.registerNewStaff(doctor);
-            home.registerNewStaff(nurse);
+            home.registerNewStaff(doctor1);
+            home.registerNewStaff(nurse1);
+            home.registerNewStaff(nurse2);
+            home.registerNewStaff(nurse3);
+            home.registerNewStaff(nurse4);
+            home.registerNewStaff(nurse5);
+            home.registerNewStaff(nurse6);
+            home.registerNewStaff(nurse7);
+            home.registerNewStaff(nurse8);
 
-            LocalDateTime now = LocalDateTime.now();
-            home.assigningShift(manager, doctor, new Shift(now, now.plusHours(8)));
-            home.assigningShift(manager, nurse, new Shift(now, now.plusHours(8)));
+            LocalDate today = LocalDate.now();
+
+            // Assign Doctor shift: 1 hour every day of the week
+            for (DayOfWeek day : DayOfWeek.values()) {
+                LocalDate date = today.with(day);
+                LocalDateTime start = date.atTime(4, 0);
+                LocalDateTime end = start.plusHours(1);
+                home.assigningShift(manager, doctor1, new Shift(start, end));
+            }
+
+            // Assign Nurse shifts: 8am-4pm and 2pm-10pm every day
+            for (DayOfWeek day : DayOfWeek.values()) {
+                LocalDate date = today.with(day);
+                LocalDateTime morningStart = date.atTime(8, 0);
+                LocalDateTime morningEnd = date.atTime(16, 0);
+                LocalDateTime eveningStart = date.atTime(14, 0);
+                LocalDateTime eveningEnd = date.atTime(22, 0);
+
+                // Morning
+                home.assigningShift(manager, nurse1, new Shift(morningStart, morningEnd));
+                home.assigningShift(manager, nurse2, new Shift(morningStart, morningEnd));
+                home.assigningShift(manager, nurse3, new Shift(morningStart, morningEnd));
+                home.assigningShift(manager, nurse4, new Shift(morningStart, morningEnd));
+                // Evening
+                home.assigningShift(manager, nurse5, new Shift(eveningStart, eveningEnd));
+                home.assigningShift(manager, nurse6, new Shift(eveningStart, eveningEnd));
+                home.assigningShift(manager, nurse7, new Shift(eveningStart, eveningEnd));
+                home.assigningShift(manager, nurse8, new Shift(eveningStart, eveningEnd));
+            }
 
             return home;
         }

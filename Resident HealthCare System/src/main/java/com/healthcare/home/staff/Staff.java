@@ -54,18 +54,21 @@ public abstract class Staff implements Serializable {
             case MANAGER -> access == Access.ADD_STAFF ||
                     access == Access.UPDATE_STAFF ||
                     access == Access.VIEW_RESIDENT ||
-                    access == Access.ADD_RESIDENT;
+                    access == Access.ADD_RESIDENT ||
+                    access == Access.DISCHARGE_RESIDENT ||
+                    access == Access.SHIFT_ASSIGNMENT;
             case DOCTOR -> access == Access.VIEW_RESIDENT ||
                     access == Access.WRITE_PRESCRIPTION;
             case NURSE -> access == Access.VIEW_RESIDENT ||
                     access == Access.MOVE_RESIDENT ||
-                    access == Access.ADMINISTER_MEDICATION;
+                    access == Access.ADMINISTER_MEDICATION ||
+                    access == Access.UPDATE_PRESCRIPTION;
         };
     }
 
     private synchronized String generateId() {
         idCounter++;
-        return String.format("RES-%03d", idCounter);
+        return String.format("STF-%03d", idCounter);
     }
 
     public static void setIdCounter(long lastId) {

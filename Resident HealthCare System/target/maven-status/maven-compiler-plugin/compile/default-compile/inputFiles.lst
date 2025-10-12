@@ -7,7 +7,6 @@ E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healt
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\controller\ManagerDashboardController.java
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\controller\NurseDashboardController.java
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\core\HealthCareHome.java
-E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\core\HomeStaff.java
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\core\SerializingService.java
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\entity\Bed.java
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\entity\Gender.java
@@ -29,4 +28,3 @@ E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healt
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\staff\Staff.java
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\util\ActionLogger.java
 E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\util\AuthService.java
-E:\Resident HealthCare System\Resident HealthCare System\src\main\java\com\healthcare\home\util\PersistenceUtil.java

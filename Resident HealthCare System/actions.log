@@ -14,3 +14,17 @@
 2025-10-13 01:26:32 | staff:RES-004 | action:ADMINISTER_MEDICATION | Administered 2 tablet for Panadol to resident test
 2025-10-13 01:27:14 | staff:RES-004 | action:ADMINISTER_MEDICATION | Administered 2 for Panadol to resident test
 2025-10-13 01:36:30 | staff:RES-004 | action:ADMINISTER_MEDICATION | Administered 2 tablet for Panadol to resident test
+2025-10-13 03:16:06 | staff:RES-001 | action:ADD_RESIDENT | Assigned resident RES-001 to bed W1-R101-B1
+2025-10-13 03:18:23 | staff:RES-003 | action:WRITE_PRESCRIPTION | Prescription PRE-001 added for resident RES-001
+2025-10-13 03:19:09 | staff:RES-003 | action:WRITE_PRESCRIPTION | Prescription PRE-002 added for resident RES-001
+2025-10-13 03:19:09 | staff:RES-003 | action:WRITE_PRESCRIPTION | Prescription PRE-003 added for resident RES-001
+2025-10-13 03:19:54 | staff:RES-004 | action:ADMINISTER_MEDICINE | Administered Panadol to resident test-res1
+2025-10-13 03:20:05 | staff:RES-004 | action:ADMINISTER_MEDICINE | Administered Brufen to resident test-res1
+2025-10-13 03:20:12 | staff:RES-004 | action:ADMINISTER_MEDICINE | Administered Arinac to resident test-res1
+2025-10-13 03:20:44 | staff:RES-004 | action:MOVE_RESIDENT | Moved resident from W1-R101-B1 to W1-R101-B2
+2025-10-13 03:21:03 | staff:RES-004 | action:MOVE_RESIDENT | Moved resident from W1-R101-B2 to W1-R101-B4
+2025-10-13 04:28:10 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-001 to bed W1-R101-B1
+2025-10-13 04:28:29 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-002 to bed W1-R101-B2
+2025-10-13 04:33:01 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-001 to bed W1-R103-B1
+2025-10-13 04:33:15 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-002 to bed W2-R201-B3
+2025-10-13 04:33:42 | staff:STF-003 | action:WRITE_PRESCRIPTION | Prescription PRE-001 added for resident RES-001
