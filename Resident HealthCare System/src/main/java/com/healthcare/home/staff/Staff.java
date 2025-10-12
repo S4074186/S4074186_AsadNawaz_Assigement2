@@ -47,22 +47,17 @@ public abstract class Staff implements Serializable {
     public String getId() {
         return id;
     }
+
     public boolean has(Access access) {
-        switch (role) {
-            case MANAGER:
-                return access == Access.ADD_STAFF ||
-                        access == Access.UPDATE_STAFF ||
-                        access == Access.VIEW_RESIDENT ||
-                        access == Access.ADD_RESIDENT;
-
-            case DOCTOR:
-                return access == Access.VIEW_RESIDENT ||
-                        access == Access.WRITE_PRESCRIPTION;
-
-            case NURSE:
-                return access == Access.VIEW_RESIDENT ||
-                        access == Access.ADMINISTER_MEDICATION;
-        }
-        return false;
+        return switch (role) {
+            case MANAGER -> access == Access.ADD_STAFF ||
+                    access == Access.UPDATE_STAFF ||
+                    access == Access.VIEW_RESIDENT ||
+                    access == Access.ADD_RESIDENT;
+            case DOCTOR -> access == Access.VIEW_RESIDENT ||
+                    access == Access.WRITE_PRESCRIPTION;
+            case NURSE -> access == Access.VIEW_RESIDENT ||
+                    access == Access.ADMINISTER_MEDICATION;
+        };
     }
 }

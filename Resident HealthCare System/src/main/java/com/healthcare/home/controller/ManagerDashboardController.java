@@ -1,29 +1,29 @@
-
 package com.healthcare.home.controller;
 
+import com.healthcare.home.auth.Access;
 import com.healthcare.home.core.HealthCareHome;
 import com.healthcare.home.entity.Bed;
-import com.healthcare.home.entity.Gender;
 import com.healthcare.home.entity.Resident;
-import com.healthcare.home.staff.Doctor;
-import com.healthcare.home.staff.Manager;
-import com.healthcare.home.staff.Nurse;
-import com.healthcare.home.staff.Staff;
-import com.healthcare.home.auth.Access;
-import javafx.application.Platform;
+import com.healthcare.home.entity.Gender;
+import com.healthcare.home.staff.*;
+import com.healthcare.home.util.ActionLogger;
+import com.healthcare.home.util.AuthService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Priority;
 
 import java.util.Optional;
 
 public class ManagerDashboardController extends BaseDashboardController {
-    private HealthCareHome home;
     private Staff staff;
 
     @FXML private TableView<BedRow> bedTable;
@@ -33,23 +33,53 @@ public class ManagerDashboardController extends BaseDashboardController {
     @FXML private Button addStaffBtn;
 
     public void init(HealthCareHome home, Staff staff) {
-        this.home = home; this.staff = staff;
+        this.staff = staff;
+        setHome(home);
         setupTable();
         refreshBeds();
-        // role based visibility
         addResidentBtn.setVisible(staff.has(Access.ADD_RESIDENT));
         addStaffBtn.setVisible(staff.has(Access.ADD_STAFF));
     }
 
     private void setupTable() {
-        colBedId.setCellValueFactory(c -> javafx.beans.property.SimpleStringProperty.stringExpression(c.getValue().bedId));
-        colResident.setCellValueFactory(c -> javafx.beans.property.SimpleStringProperty.stringExpression(c.getValue().residentName));
+        colBedId.setCellValueFactory(new PropertyValueFactory<>("bedId"));
+        // custom cell to show colored gender circle and name
+        colResident.setCellFactory(col -> new TableCell<BedRow, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || getTableRow() == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    BedRow row = (BedRow) getTableRow().getItem();
+                    if (row == null) {
+                        setGraphic(null);
+                        setText(null);
+                        return;
+                    }
+                    Circle c = new Circle(6);
+                    if (row.gender != null) {
+                        c.setFill(row.gender == Gender.MALE ? Color.BLUE : Color.RED);
+                    } else {
+                        c.setFill(Color.GRAY);
+                    }
+                    Label lbl = new Label(row.residentName.get());
+                    HBox h = new HBox(8, c, lbl);
+                    h.setAlignment(Pos.CENTER_LEFT);
+                    setGraphic(h);
+                    setText(null);
+                }
+            }
+        });
+        colResident.setCellValueFactory(new PropertyValueFactory<>("residentName"));
+
         bedTable.setRowFactory(tv -> {
             TableRow<BedRow> row = new TableRow<>();
             row.setOnMouseClicked((MouseEvent event) -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     BedRow rowData = row.getItem();
-                    showResidentDetails(String.valueOf(rowData.bedId));
+                    showResidentDetails(String.valueOf(rowData.bedId.get()));
                 }
             });
             return row ;
@@ -58,15 +88,23 @@ public class ManagerDashboardController extends BaseDashboardController {
 
     private void refreshBeds() {
         ObservableList<BedRow> rows = FXCollections.observableArrayList();
-        for (Bed b : home.getBedList().values()) {
+        for (com.healthcare.home.entity.Bed b : home.getBedList().values()) {
             String rn = b.isVacant() ? "" : b.getResident().getName();
-            rows.add(new BedRow(b.getId(), rn));
+            Gender g = b.isVacant() ? null : b.getResident().getGender();
+            rows.add(new BedRow(b.getId(), rn, g));
         }
         bedTable.setItems(rows);
     }
 
     @FXML
     public void onAddResident() {
+        try {
+            AuthService.authorizeOrThrow(staff, Access.ADD_RESIDENT);
+        } catch (SecurityException se) {
+            showAlert("Not allowed. " + se.getMessage());
+            return;
+        }
+
         BedRow sel = bedTable.getSelectionModel().getSelectedItem();
         if (sel == null) {
             showAlert("Select a bed first");
@@ -83,7 +121,7 @@ public class ManagerDashboardController extends BaseDashboardController {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
 
         TextField idField = new TextField();
         idField.setPromptText("Resident ID");
@@ -91,13 +129,11 @@ public class ManagerDashboardController extends BaseDashboardController {
         TextField nameField = new TextField();
         nameField.setPromptText("Resident Name");
 
-        // ✅ Gender dropdown — only Male/Female allowed
         ComboBox<String> genderBox = new ComboBox<>();
         genderBox.getItems().addAll("MALE", "FEMALE");
         genderBox.setPromptText("Select Gender");
         genderBox.setEditable(false);
 
-        // ✅ Isolation dropdown — Yes/No (true/false)
         ComboBox<String> isolationBox = new ComboBox<>();
         isolationBox.getItems().addAll("YES", "NO");
         isolationBox.setPromptText("Isolation Required?");
@@ -113,7 +149,7 @@ public class ManagerDashboardController extends BaseDashboardController {
         grid.add(isolationBox, 1, 3);
 
         dialog.getDialogPane().setContent(grid);
-        Platform.runLater(idField::requestFocus);
+        javafx.application.Platform.runLater(idField::requestFocus);
 
         Optional<ButtonType> result = dialog.showAndWait();
 
@@ -136,7 +172,8 @@ public class ManagerDashboardController extends BaseDashboardController {
                         "YES".equalsIgnoreCase(isolation)
                 );
 
-                home.assignResidentToBed(staff, String.valueOf(sel.bedId), resident);
+                home.assignResidentToBed(staff, String.valueOf(sel.bedId.get()), resident);
+                ActionLogger.log(staff.getId(), "ADD_RESIDENT", "Assigned resident " + id + " to bed " + sel.bedId.get());
                 refreshBeds();
                 showAlert("Resident added successfully!");
 
@@ -146,9 +183,15 @@ public class ManagerDashboardController extends BaseDashboardController {
         }
     }
 
-
     @FXML
     public void onAddStaff() {
+        try {
+            AuthService.authorizeOrThrow(staff, Access.ADD_STAFF);
+        } catch (SecurityException se) {
+            showAlert("Not allowed. " + se.getMessage());
+            return;
+        }
+
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Add New Staff");
         dialog.setHeaderText("Enter staff details");
@@ -159,7 +202,7 @@ public class ManagerDashboardController extends BaseDashboardController {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setPadding(new javafx.geometry.Insets(20, 150, 10, 10));
 
         TextField idField = new TextField();
         idField.setPromptText("Staff ID");
@@ -167,11 +210,10 @@ public class ManagerDashboardController extends BaseDashboardController {
         TextField nameField = new TextField();
         nameField.setPromptText("Full Name");
 
-        // ✅ ComboBox with fixed options — no typing allowed
         ComboBox<String> roleBox = new ComboBox<>();
         roleBox.getItems().addAll("MANAGER", "DOCTOR", "NURSE");
         roleBox.setPromptText("Select Role");
-        roleBox.setEditable(false); // ⛔ disable manual typing
+        roleBox.setEditable(false);
 
         TextField usernameField = new TextField();
         usernameField.setPromptText("Username");
@@ -191,7 +233,7 @@ public class ManagerDashboardController extends BaseDashboardController {
         grid.add(passwordField, 1, 4);
 
         dialog.getDialogPane().setContent(grid);
-        Platform.runLater(idField::requestFocus);
+        javafx.application.Platform.runLater(idField::requestFocus);
 
         Optional<ButtonType> result = dialog.showAndWait();
 
@@ -199,7 +241,7 @@ public class ManagerDashboardController extends BaseDashboardController {
             try {
                 String id = idField.getText().trim();
                 String name = nameField.getText().trim();
-                String role = roleBox.getValue(); // ✅ fixed dropdown selection only
+                String role = roleBox.getValue();
                 String username = usernameField.getText().trim();
                 String password = passwordField.getText().trim();
 
@@ -216,6 +258,7 @@ public class ManagerDashboardController extends BaseDashboardController {
                 };
 
                 home.registerNewStaff(newStaff);
+                ActionLogger.log(staff.getId(), "ADD_STAFF", "Added staff " + id + " role " + role);
                 refreshBeds();
                 showAlert("Staff added successfully!");
 
@@ -236,6 +279,7 @@ public class ManagerDashboardController extends BaseDashboardController {
             Alert a = new Alert(Alert.AlertType.INFORMATION, "Resident: " + r.getId() + " - " + r.getName());
             a.setHeaderText("Resident Details");
             a.showAndWait();
+            ActionLogger.log(staff.getId(), "VIEW_RESIDENT", "Viewed resident " + r.getId() + " from bed " + bedId);
         } catch (Exception ex) { showAlert(ex.getMessage()); }
     }
 
@@ -247,9 +291,16 @@ public class ManagerDashboardController extends BaseDashboardController {
     public static class BedRow {
         public final javafx.beans.property.StringProperty bedId;
         public final javafx.beans.property.StringProperty residentName;
-        public BedRow(String b, String r) {
+        public final Gender gender;
+
+        public BedRow(String b, String r, Gender g) {
             this.bedId = new javafx.beans.property.SimpleStringProperty(b);
             this.residentName = new javafx.beans.property.SimpleStringProperty(r);
+            this.gender = g;
         }
+
+        // getters for PropertyValueFactory
+        public String getBedId() { return bedId.get(); }
+        public String getResidentName() { return residentName.get(); }
     }
 }

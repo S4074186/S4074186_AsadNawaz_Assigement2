@@ -1,0 +1,4 @@
+2025-10-12 20:34:50 | staff:MGR1 | action:ADD_RESIDENT | Assigned resident R1 to bed W1-R101-B1
+2025-10-12 20:34:59 | staff:SYSTEM | action:SAVE_HOME | Saved home to healthcarehome.dat
+2025-10-12 20:57:28 | staff:MGR1 | action:ADD_RESIDENT | Assigned resident R! to bed W1-R101-B1
+2025-10-12 21:33:31 | staff:D1 | action:WRITE_PRESCRIPTION | Prescription 1 for resident R!

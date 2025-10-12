@@ -1,28 +1,24 @@
-
 package com.healthcare.home.controller;
 
+import com.healthcare.home.auth.Access;
 import com.healthcare.home.core.HealthCareHome;
-import com.healthcare.home.entity.Bed;
 import com.healthcare.home.entity.Prescription;
 import com.healthcare.home.entity.Resident;
-import com.healthcare.home.staff.Doctor;
-import com.healthcare.home.staff.Staff;
-import com.healthcare.home.auth.Access;
-import javafx.application.Platform;
+import com.healthcare.home.staff.*;
+import com.healthcare.home.util.ActionLogger;
+import com.healthcare.home.util.AuthService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class DoctorDashboardController extends BaseDashboardController {
-    private HealthCareHome home;
     private Staff staff;
 
     @FXML private TableView<com.healthcare.home.controller.ManagerDashboardController.BedRow> bedTable;
@@ -31,7 +27,8 @@ public class DoctorDashboardController extends BaseDashboardController {
     @FXML private Button prescribeBtn;
 
     public void init(HealthCareHome home, Staff staff) {
-        this.home = home; this.staff = staff;
+        this.staff = staff;
+        setHome(home);
         setupTable(); refreshBeds();
         prescribeBtn.setVisible(staff.has(Access.WRITE_PRESCRIPTION));
     }
@@ -42,16 +39,23 @@ public class DoctorDashboardController extends BaseDashboardController {
     }
 
     private void refreshBeds() {
-        ObservableList<ManagerDashboardController.BedRow> rows = FXCollections.observableArrayList();
-        for (Bed b : home.getBedList().values()) {
+        ObservableList<com.healthcare.home.controller.ManagerDashboardController.BedRow> rows = FXCollections.observableArrayList();
+        for (com.healthcare.home.entity.Bed b : home.getBedList().values()) {
             String rn = b.isVacant() ? "" : b.getResident().getName();
-            rows.add(new ManagerDashboardController.BedRow(b.getId(), rn));
+            rows.add(new com.healthcare.home.controller.ManagerDashboardController.BedRow(b.getId(), rn, b.isVacant() ? null : b.getResident().getGender()));
         }
         bedTable.setItems(rows);
     }
 
     @FXML
     public void onPrescribe() {
+        try {
+            AuthService.authorizeOrThrow(staff, Access.WRITE_PRESCRIPTION);
+        } catch (SecurityException se) {
+            showAlert("Not allowed. " + se.getMessage());
+            return;
+        }
+
         ManagerDashboardController.BedRow sel = bedTable.getSelectionModel().getSelectedItem();
         if (sel == null) {
             showAlert("Select a bed that has a resident first");
@@ -70,9 +74,6 @@ public class DoctorDashboardController extends BaseDashboardController {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField idField = new TextField();
-        idField.setPromptText("Prescription ID");
-
         TextField medField = new TextField();
         medField.setPromptText("Medicine Name");
 
@@ -80,10 +81,8 @@ public class DoctorDashboardController extends BaseDashboardController {
         doseField.setPromptText("Dose Description (e.g., 1 tablet)");
 
         TextField timesField = new TextField();
-        timesField.setPromptText("Times (comma separated, HH:mm — optional)");
+        timesField.setPromptText("Times (comma separated, HH:mm optional)");
 
-        grid.add(new Label("Prescription ID:"), 0, 0);
-        grid.add(idField, 1, 0);
         grid.add(new Label("Medicine:"), 0, 1);
         grid.add(medField, 1, 1);
         grid.add(new Label("Dose:"), 0, 2);
@@ -92,38 +91,34 @@ public class DoctorDashboardController extends BaseDashboardController {
         grid.add(timesField, 1, 3);
 
         dialog.getDialogPane().setContent(grid);
-        Platform.runLater(idField::requestFocus);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == addButtonType) {
             try {
-                String pid = idField.getText().trim();
                 String med = medField.getText().trim();
                 String dose = doseField.getText().trim();
                 String times = timesField.getText().trim();
 
-                if (pid.isEmpty() || med.isEmpty() || dose.isEmpty()) {
+                if (med.isEmpty() || dose.isEmpty()) {
                     showAlert("Prescription ID, Medicine, and Dose are required!");
                     return;
                 }
 
-                // Optional: Parse times if entered
-                List<LocalTime> timeList = new ArrayList<>();
+                List<String> timeList = new ArrayList<>();
                 if (!times.isEmpty()) {
                     for (String t : times.split(",")) {
                         t = t.trim();
-                        if (!t.isEmpty()) timeList.add(LocalTime.parse(t));
+                        if (!t.isEmpty()) timeList.add(t);
                     }
                 }
 
-                Resident resident = home.getBedList().get(sel.bedId).getResident();
+                Resident resident = home.getBedList().get(sel.bedId.get()).getResident();
                 if (resident == null) {
                     showAlert("No resident found in this bed!");
                     return;
                 }
 
                 Prescription prescription = new Prescription(
-                        pid,
                         staff.getId(),
                         resident.getId(),
                         med,
@@ -131,7 +126,8 @@ public class DoctorDashboardController extends BaseDashboardController {
                         timeList
                 );
 
-                home.writePrescription((Doctor) staff, String.valueOf(sel.bedId), prescription);
+                home.writePrescription((Doctor) staff, String.valueOf(sel.bedId.get()), prescription);
+                ActionLogger.log(staff.getId(), "WRITE_PRESCRIPTION", "Prescription " + prescription.getId() + " for resident " + resident.getId());
                 showAlert("Prescription added successfully!");
 
             } catch (Exception ex) {

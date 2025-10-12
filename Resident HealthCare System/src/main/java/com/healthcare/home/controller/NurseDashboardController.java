@@ -1,23 +1,22 @@
-
 package com.healthcare.home.controller;
 
+import com.healthcare.home.auth.Access;
 import com.healthcare.home.core.HealthCareHome;
 import com.healthcare.home.entity.Bed;
-import com.healthcare.home.staff.Staff;
-import com.healthcare.home.auth.Access;
-import javafx.application.Platform;
+import com.healthcare.home.staff.*;
+import com.healthcare.home.util.ActionLogger;
+import com.healthcare.home.util.AuthService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
+import javafx.geometry.Insets;
+import javafx.application.Platform;
 
 import java.util.Optional;
 
-public class NurseDashboardController extends  BaseDashboardController {
-    private HealthCareHome home;
+public class NurseDashboardController extends BaseDashboardController {
     private Staff staff;
 
     @FXML private TableView<com.healthcare.home.controller.ManagerDashboardController.BedRow> bedTable;
@@ -27,7 +26,8 @@ public class NurseDashboardController extends  BaseDashboardController {
     @FXML private Button administerBtn;
 
     public void init(HealthCareHome home, Staff staff) {
-        this.home = home; this.staff = staff;
+        this.staff = staff;
+        setHome(home);
         setupTable(); refreshBeds();
         moveBtn.setVisible(staff.has(Access.MOVE_RESIDENT));
         administerBtn.setVisible(staff.has(Access.ADMINISTER_MEDICATION));
@@ -39,34 +39,50 @@ public class NurseDashboardController extends  BaseDashboardController {
     }
 
     private void refreshBeds() {
-        ObservableList<com.healthcare.home.controller.ManagerDashboardController.BedRow> rows = FXCollections.observableArrayList();
+        ObservableList<ManagerDashboardController.BedRow> rows = FXCollections.observableArrayList();
         for (Bed b : home.getBedList().values()) {
             String rn = b.isVacant() ? "" : b.getResident().getName();
-            rows.add(new com.healthcare.home.controller.ManagerDashboardController.BedRow(b.getId(), rn));
+            rows.add(new com.healthcare.home.controller.ManagerDashboardController.BedRow(b.getId(), rn, b.isVacant() ? null : b.getResident().getGender()));
         }
         bedTable.setItems(rows);
     }
 
     @FXML public void onMove() {
-        com.healthcare.home.controller.ManagerDashboardController.BedRow sel = bedTable.getSelectionModel().getSelectedItem();
+        try {
+            AuthService.authorizeOrThrow(staff, Access.MOVE_RESIDENT);
+        } catch (SecurityException se) {
+            showAlert("Not allowed. " + se.getMessage());
+            return;
+        }
+
+        ManagerDashboardController.BedRow sel = bedTable.getSelectionModel().getSelectedItem();
         if (sel == null) {
             showAlert("Select source bed");
             return;
         }
         TextInputDialog dlg = new TextInputDialog();
         dlg.setTitle("Move Resident");
-        dlg.setHeaderText("Enter destination bed id"); 
+        dlg.setHeaderText("Enter destination bed id");
         dlg.showAndWait().ifPresent(dest -> {
             try {
-                home.moveResidentToNewBed((com.healthcare.home.staff.Nurse) staff, String.valueOf(sel.bedId), dest.trim());
-                refreshBeds(); showAlert("Moved"); 
+                home.moveResidentToNewBed((Nurse) staff, String.valueOf(sel.bedId.get()), dest.trim());
+                ActionLogger.log(staff.getId(), "MOVE_RESIDENT", "Moved resident from " + sel.bedId.get() + " to " + dest.trim());
+                refreshBeds();
+                showAlert("Moved");
             } catch (Exception ex) { showAlert(ex.getMessage()); }
         });
     }
 
     @FXML
     public void onAdminister() {
-        com.healthcare.home.controller.ManagerDashboardController.BedRow sel = bedTable.getSelectionModel().getSelectedItem();
+        try {
+            AuthService.authorizeOrThrow(staff, Access.ADMINISTER_MEDICATION);
+        } catch (SecurityException se) {
+            showAlert("Not allowed. " + se.getMessage());
+            return;
+        }
+
+        ManagerDashboardController.BedRow sel = bedTable.getSelectionModel().getSelectedItem();
         if (sel == null) {
             showAlert("Select a bed with a resident first");
             return;
@@ -109,7 +125,8 @@ public class NurseDashboardController extends  BaseDashboardController {
                     return;
                 }
 
-                home.administerMedication((com.healthcare.home.staff.Nurse) staff, prescriptionId, dose);
+                home.administerMedication((Nurse) staff, prescriptionId, dose);
+                ActionLogger.log(staff.getId(), "ADMINISTER_MEDICATION", "Administered " + dose + " for prescription " + prescriptionId);
                 showAlert("Medication administered successfully!");
 
             } catch (Exception ex) {
@@ -118,5 +135,7 @@ public class NurseDashboardController extends  BaseDashboardController {
         }
     }
 
-    private void showAlert(String m) { Alert a = new Alert(Alert.AlertType.INFORMATION, m); a.showAndWait(); }
+    private void showAlert(String m) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION, m); a.showAndWait();
+    }
 }
