@@ -13,13 +13,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.Optional;
 
@@ -32,6 +26,7 @@ public class ManagerDashboardController extends BaseDashboardController {
     @FXML private TableColumn<BedRow, String> colPrescription;
     @FXML private Button addResidentBtn;
     @FXML private Button addStaffBtn;
+    @FXML private Button dischargeBtn;
 
     public void init(HealthCareHome home, Staff staff) {
         this.staff = staff;
@@ -40,48 +35,8 @@ public class ManagerDashboardController extends BaseDashboardController {
         refreshBeds();
         addResidentBtn.setVisible(staff.has(Access.ADD_RESIDENT));
         addStaffBtn.setVisible(staff.has(Access.ADD_STAFF));
+        dischargeBtn.setVisible(staff.has(Access.DISCHARGE_RESIDENT));
     }
-
-//    private void setupTable() {
-//        colBedId.setCellValueFactory(new PropertyValueFactory<>("bedId"));
-//        colResident.setCellFactory(col -> new TableCell<BedRow, String>() {
-//            @Override
-//            protected void updateItem(String item, boolean empty) {
-//                super.updateItem(item, empty);
-//                if (empty || item == null || getTableRow() == null) {
-//                    setGraphic(null);
-//                    setText(null);
-//                } else {
-//                    BedRow row = (BedRow) getTableRow().getItem();
-//                    if (row == null) {
-//                        setGraphic(null);
-//                        setText(null);
-//                        return;
-//                    }
-//                    Circle c = new Circle(6);
-//                    if (row.gender != null) c.setFill(row.gender == Gender.MALE ? Color.BLUE : Color.RED);
-//                    else c.setFill(Color.GRAY);
-//                    Label lbl = new Label(row.residentName.get());
-//                    HBox h = new HBox(8, c, lbl);
-//                    h.setAlignment(Pos.CENTER_LEFT);
-//                    setGraphic(h);
-//                    setText(null);
-//                }
-//            }
-//        });
-//        colResident.setCellValueFactory(new PropertyValueFactory<>("residentName"));
-//
-//        bedTable.setRowFactory(tv -> {
-//            TableRow<BedRow> row = new TableRow<>();
-//            row.setOnMouseClicked((MouseEvent event) -> {
-//                if (event.getClickCount() == 2 && (!row.isEmpty())) {
-//                    BedRow rowData = row.getItem();
-//                    showResidentDetails(String.valueOf(rowData.bedId.get()));
-//                }
-//            });
-//            return row;
-//        });
-//    }
 
     private void refreshBeds() {
         ObservableList<BedRow> rows = FXCollections.observableArrayList();
@@ -114,7 +69,6 @@ public class ManagerDashboardController extends BaseDashboardController {
         ButtonType addButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
 
-        // no id field now
         TextField nameField = new TextField();
         nameField.setPromptText("Resident Name");
         ComboBox<String> genderBox = new ComboBox<>();
@@ -221,11 +175,51 @@ public class ManagerDashboardController extends BaseDashboardController {
                     default -> null;
                 };
                 home.addNewStaff(staff, newStaff);
-                ActionLogger.log(staff.getId(), "ADD_STAFF", "Added staff " + staff.getId() + " role " + role);
+                ActionLogger.log(staff.getId(), "ADD_STAFF", "Added staff " + newStaff.getId() + " role " + role);
                 refreshBeds();
                 showAlert("Staff added successfully!");
             } catch (Exception ex) {
                 showAlert("Error: " + ex.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    public void onDischarge() {
+        try {
+            AuthService.authorizeOrThrow(staff, Access.DISCHARGE_RESIDENT);
+        } catch (SecurityException se) {
+            showAlert("Not allowed. " + se.getMessage());
+            return;
+        }
+
+        BedRow sel = bedTable.getSelectionModel().getSelectedItem();
+        if (sel == null || sel.getResidentName() == null || sel.getResidentName().isEmpty()) {
+            showAlert("Select a bed with a resident to discharge");
+            return;
+        }
+
+        Bed bed = home.getBedList().get(sel.getBedId());
+        if (bed == null || bed.isVacant()) {
+            showAlert("This bed is already vacant");
+            return;
+        }
+
+        Resident r = bed.getResident();
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirm Discharge");
+        confirm.setHeaderText("Discharge Resident");
+        confirm.setContentText("Are you sure you want to discharge " + r.getName() + "?");
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                home.dischargeResident(staff, r.getBedId());
+                ActionLogger.log(staff.getId(), "DISCHARGE_RESIDENT", "Discharged resident " + r.getId());
+                refreshBeds();
+                showAlert("Resident " + r.getName() + " has been discharged successfully.");
+            } catch (Exception ex) {
+                showAlert("Error discharging resident: " + ex.getMessage());
             }
         }
     }
@@ -286,5 +280,4 @@ public class ManagerDashboardController extends BaseDashboardController {
             return row;
         });
     }
-
 }
