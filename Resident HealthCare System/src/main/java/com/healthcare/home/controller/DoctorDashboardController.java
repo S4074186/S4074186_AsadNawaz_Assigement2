@@ -2,10 +2,8 @@ package com.healthcare.home.controller;
 
 import com.healthcare.home.auth.Access;
 import com.healthcare.home.core.HealthCareHome;
-import com.healthcare.home.entity.Prescription;
-import com.healthcare.home.entity.Resident;
-import com.healthcare.home.entity.Gender;
-import com.healthcare.home.entity.Bed;
+import com.healthcare.home.entity.*;
+import com.healthcare.home.exceptions.UnAuthorizationException;
 import com.healthcare.home.staff.*;
 import com.healthcare.home.util.ActionLogger;
 import com.healthcare.home.util.AuthService;
@@ -73,7 +71,9 @@ public class DoctorDashboardController extends BaseDashboardController {
     public void onPrescribe() {
         try {
             AuthService.authorizeOrThrow(staff, Access.WRITE_PRESCRIPTION);
-        } catch (SecurityException se) {
+            getHome().requireAuthorizeRole(staff, Role.DOCTOR);
+            getHome().requireOnDutyStaff(staff);
+        } catch (SecurityException | UnAuthorizationException se) {
             showAlert("Not allowed. " + se.getMessage());
             return;
         }
@@ -165,17 +165,17 @@ public class DoctorDashboardController extends BaseDashboardController {
         }
 
         if (!newPrescriptions.isEmpty()) {
+
             getHome().writePrescription((Doctor) staff, sel.bedId.get(), newPrescriptions);
 
             for (Prescription p : newPrescriptions) {
                 ActionLogger.log(staff.getId(), "WRITE_PRESCRIPTION",
                         "Prescription " + p.getId() + " added for resident " + resident.getId());
             }
-
             refreshBeds();
             showAlert("Added " + newPrescriptions.size() + " prescriptions successfully!");
-        }
 
+        }
     }
 
 

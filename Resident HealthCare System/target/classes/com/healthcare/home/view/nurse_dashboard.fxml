@@ -11,7 +11,7 @@
         <ToolBar>
             <Button fx:id="moveBtn" text="Move Resident" onAction="#onMove"/>
             <Button fx:id="administerBtn" text="Administer" onAction="#onAdminister"/>
-            <Region prefWidth="20"/>
+            <Region prefWidth="400"/>
             <Button fx:id="logoutBtn" text="Logout" onAction="#onLogout"/>
         </ToolBar>
     </top>

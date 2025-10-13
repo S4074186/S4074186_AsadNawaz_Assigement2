@@ -10,7 +10,7 @@
     <top>
         <ToolBar>
             <Button fx:id="prescribeBtn" text="Add Prescription" onAction="#onPrescribe"/>
-            <Region prefWidth="20"/>
+            <Region prefWidth="420"/>
             <Button fx:id="logoutBtn" text="Logout" onAction="#onLogout"/>
         </ToolBar>
     </top>

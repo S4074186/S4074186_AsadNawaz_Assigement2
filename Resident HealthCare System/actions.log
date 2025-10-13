@@ -28,3 +28,13 @@
 2025-10-13 04:33:01 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-001 to bed W1-R103-B1
 2025-10-13 04:33:15 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-002 to bed W2-R201-B3
 2025-10-13 04:33:42 | staff:STF-003 | action:WRITE_PRESCRIPTION | Prescription PRE-001 added for resident RES-001
+2025-10-14 02:16:46 | staff:STF-002 | action:DISCHARGE_RESIDENT | Discharged resident RES-002
+2025-10-14 02:17:51 | staff:STF-004 | action:ADMINISTER_MEDICINE | Administered Panadol to resident test-res1
+2025-10-14 02:18:09 | staff:STF-004 | action:ADMINISTER_MEDICINE | Administered Panadol to resident test-res1
+2025-10-14 02:23:43 | staff:STF-004 | action:ADMINISTER_MEDICINE | Administered Panadol to resident test-res1
+2025-10-14 02:33:49 | staff:STF-003 | action:WRITE_PRESCRIPTION | Prescription PRE-001 added for resident RES-001
+2025-10-14 02:40:00 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-001 to bed W1-R102-B1
+2025-10-14 02:40:16 | staff:STF-002 | action:ADD_RESIDENT | Assigned resident RES-002 to bed W1-R103-B1
+2025-10-14 02:40:45 | staff:STF-003 | action:WRITE_PRESCRIPTION | Prescription PRE-001 added for resident RES-001
+2025-10-14 02:41:14 | staff:STF-003 | action:WRITE_PRESCRIPTION | Prescription PRE-002 added for resident RES-002
+2025-10-14 02:42:55 | staff:STF-002 | action:DISCHARGE_RESIDENT | Discharged resident RES-002

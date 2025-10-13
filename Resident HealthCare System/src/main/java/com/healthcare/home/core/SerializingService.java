@@ -65,7 +65,7 @@ public class SerializingService {
             // Assign Doctor shift: 1 hour every day of the week
             for (DayOfWeek day : DayOfWeek.values()) {
                 LocalDate date = today.with(day);
-                LocalDateTime start = date.atTime(4, 0);
+                LocalDateTime start = date.atTime(10, 0);
                 LocalDateTime end = start.plusHours(1);
                 home.assigningShift(manager, doctor1, new Shift(start, end));
             }

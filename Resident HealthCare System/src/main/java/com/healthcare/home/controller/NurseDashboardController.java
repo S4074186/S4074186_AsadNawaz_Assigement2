@@ -5,21 +5,18 @@ import com.healthcare.home.core.HealthCareHome;
 import com.healthcare.home.entity.Bed;
 import com.healthcare.home.entity.Prescription;
 import com.healthcare.home.entity.Resident;
+import com.healthcare.home.entity.Role;
+import com.healthcare.home.exceptions.UnAuthorizationException;
 import com.healthcare.home.staff.Nurse;
 import com.healthcare.home.staff.Staff;
 import com.healthcare.home.util.ActionLogger;
 import com.healthcare.home.util.AuthService;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public class NurseDashboardController extends BaseDashboardController {
     private Staff staff;
@@ -117,8 +114,13 @@ public class NurseDashboardController extends BaseDashboardController {
     public void onAdminister() {
         try {
             AuthService.authorizeOrThrow(staff, Access.ADMINISTER_MEDICATION);
-        } catch (SecurityException se) {
-            showAlert("Not allowed. " + se.getMessage());
+            getHome().requireAuthorizeRole(staff, Role.NURSE);
+            getHome().requireOnDutyStaff(staff);
+        } catch (SecurityException | UnAuthorizationException ex) {
+            showAlert("Not allowed. " + ex.getMessage());
+            return;
+        } catch (Exception ex) {
+            showAlert("Error: " + ex.getMessage());
             return;
         }
 
@@ -148,23 +150,26 @@ public class NurseDashboardController extends BaseDashboardController {
         dialog.setTitle("Administer Medicine");
         dialog.setHeaderText("Select medicine to administer");
         dialog.setContentText("Medicine:");
+
         dialog.showAndWait().ifPresent(selectedMed -> {
-            String medName = selectedMed.split(" ")[0];
-            for (Prescription p : resident.getPrescriptionList()) {
-                if (p.getMedicine().equalsIgnoreCase(medName)) {
-                    p.administer(staff.getId()); // mark as administered
-                    ActionLogger.log(staff.getId(), "ADMINISTER_MEDICINE",
-                            "Administered " + medName + " to resident " + resident.getName());
-                    showAlert("Dose administered for " + medName);
-                    break;
+            try {
+                String medName = selectedMed.split(" ")[0];
+                for (Prescription p : resident.getPrescriptionList()) {
+                    if (p.getMedicine().equalsIgnoreCase(medName)) {
+                        p.administer(staff.getId()); // mark as administered
+                        ActionLogger.log(staff.getId(), "ADMINISTER_MEDICINE",
+                                "Administered " + medName + " to resident " + resident.getName());
+                        showAlert("Dose administered for " + medName);
+                        break;
+                    }
                 }
+                getHome().saveAllStateToFile(null);
+                refreshBeds();
+            } catch (Exception ex) {
+                showAlert("Error: " + ex.getMessage());
             }
-            getHome().saveAllStateToFile(null);
-            refreshBeds();
         });
     }
-
-
 
     private void showAlert(String m) {
         Alert a = new Alert(Alert.AlertType.INFORMATION, m);

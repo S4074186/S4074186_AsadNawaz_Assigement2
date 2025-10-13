@@ -443,12 +443,12 @@ public class HealthCareHome implements Serializable {
         if (!(staff instanceof Manager)) throw new UnAuthorizationException("Manager authorized only");
     }
 
-    private void requireAuthorizeRole(Staff staff, Role role) {
+    public void requireAuthorizeRole(Staff staff, Role role) {
         if (staff == null) throw new UnAuthorizationException("No staff provided");
         if (!staff.getRole().equals(role)) throw new UnAuthorizationException("Requires authorized role " + role);
     }
 
-    private void requireOnDutyStaff(Staff s) {
+    public void requireOnDutyStaff(Staff s) {
         if (!scheduler.isAvailableOnDuty(s, LocalDateTime.now()))
             throw new UnAuthorizationException("Staff not rostered at this time");
     }

@@ -67,7 +67,7 @@ public abstract class BaseDashboardController {
         colResident.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue().residentName.get()));
 
-        // Prescription column with expandable list
+        // Prescription column with expandable list (medicine, dose, time)
         colPrescription.setCellFactory(col -> new TableCell<>() {
             private final Button expandBtn = new Button("▶");
             private boolean expanded = false;
@@ -114,13 +114,15 @@ public abstract class BaseDashboardController {
 
                 List<Prescription> prescriptions = resident.getPrescriptionList();
 
-                expandedBox = new VBox(3);
+                expandedBox = new VBox(4);
                 expandedBox.setVisible(false);
                 expandedBox.setAlignment(Pos.CENTER_LEFT);
                 expandedBox.setStyle("-fx-padding: 4 0 0 18;");
 
                 for (Prescription p : prescriptions) {
-                    Label label = new Label(p.getMedicine() + " (" + p.getDose() + ")");
+                    String presInfo = p.getMedicine() + " (" + p.getDose() + ") at " +
+                            (p.getTimes() != null ? p.getTimes().toString() : "N/A");
+                    Label label = new Label(presInfo);
                     label.setStyle("-fx-font-size: 12;");
                     expandedBox.getChildren().add(label);
                 }
