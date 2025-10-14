@@ -9,8 +9,7 @@ import com.healthcare.home.scheduler.Shift;
 import com.healthcare.home.staff.*;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.*;
 
 /**
@@ -112,48 +111,96 @@ public class HealthCareHome implements Serializable {
      * Where to call: after assigning shifts, during startup validation, or via Manager UI ("Validate Roster")
      */
     public void checkCompliance() {
-        // NOTE: relies on Schedule exposing a way to get all shifts for staff.
-        // If Schedule has getDailyRoster() or getShiftsForStaff(String staffId) use that.
-        // Here we assume Schedule has a method Map<String, List<Shift>> getDailyRoster()
-        Map<String, List<Shift>> roster = scheduler.getDailyRoster(); // ensure Schedule provides this method
+        // copy of roster for inspection
+        Map<String, List<Shift>> roster = scheduler.getDailyRoster();
 
-        for (Map.Entry<String, List<Shift>> entry : roster.entrySet()) {
-            String staffId = entry.getKey();
-            Staff s = staffList.get(staffId);
-            if (s == null) continue;
+        // Build mapping staffId -> Staff (for role checks)
+        // staffList is a map in HealthCareHome
+        // For safety use unmodifiable copy
+        Map<String, Staff> staffMap = this.getStaffList();
 
-            // group by date
-            Map<LocalDate, Long> hoursByDate = new HashMap<>();
-            for (Shift sh : entry.getValue()) {
-                LocalDate date = (LocalDate) sh.getStart().toLocalDate();
-                long hours = sh.hours();
-                hoursByDate.merge(date, hours, Long::sum);
+        // For each day of week, check coverage
+        for (DayOfWeek dow : DayOfWeek.values()) {
+            boolean morningCovered = false;   // 08:00-16:00
+            boolean eveningCovered = false;   // 14:00-22:00
+            boolean doctorOneHourPresent = false;
+
+            // iterate through roster entries for each staff
+            for (Map.Entry<String, List<Shift>> entry : roster.entrySet()) {
+                String staffId = entry.getKey();
+                Staff staff = staffMap.get(staffId);
+                if (staff == null) continue;
+                List<Shift> shifts = entry.getValue();
+
+                for (Shift shift : shifts) {
+                    // Determine the shift's calendar day(s).
+                    // We'll check shifts whose start date's day-of-week equals dow
+                    LocalDateTime start = (LocalDateTime) shift.getStart();
+                    LocalDateTime end = (LocalDateTime) shift.getEnd();
+
+                    if (!start.getDayOfWeek().equals(dow)) continue;
+
+                    // morning coverage if this shift fully contains 08:00-16:00 on that day
+                    LocalDate dayDate = start.toLocalDate();
+                    LocalDateTime morningStart = LocalDateTime.of(dayDate, LocalTime.of(8, 0));
+                    LocalDateTime morningEnd = LocalDateTime.of(dayDate, LocalTime.of(16, 0));
+                    if (!start.isAfter(morningStart) && !end.isBefore(morningEnd)) {
+                        if (staff instanceof Nurse) morningCovered = true;
+                    } else {
+                        // also allow shift that starts at or before 8 and ends after or at 16,
+                        // already covered by previous condition -- kept for clarity
+                    }
+
+                    // evening coverage if shift fully contains 14:00-22:00 on that day
+                    LocalDateTime eveningStart = LocalDateTime.of(dayDate, LocalTime.of(14, 0));
+                    LocalDateTime eveningEnd = LocalDateTime.of(dayDate, LocalTime.of(22, 0));
+                    if (!start.isAfter(eveningStart) && !end.isBefore(eveningEnd)) {
+                        if (staff instanceof Nurse) eveningCovered = true;
+                    }
+
+                    // doctor 1-hour check: if staff is doctor and shift duration == 1 hour
+                    if (staff instanceof Doctor) {
+                        long hours = Duration.between(start, end).toHours();
+                        if (hours == 1) doctorOneHourPresent = true;
+                    }
+                }
             }
 
-            if (s instanceof Nurse) {
-                for (Map.Entry<LocalDate, Long> e : hoursByDate.entrySet()) {
-                    if (e.getValue() > 8) {
-                        throw new RosterUnfollowedException("Nurse " + s.getId() + " has more than 8 hours on " + e.getKey());
-                    }
-                }
-            } else if (s instanceof Doctor) {
-                for (Map.Entry<LocalDate, Long> e : hoursByDate.entrySet()) {
-                    if (!e.getValue().equals(1L)) {
-                        throw new RosterUnfollowedException("Doctor " + s.getId() + " must have 1-hour shift daily (found " + e.getValue() + " on " + e.getKey() + ")");
-                    }
-                }
+            if (!morningCovered) {
+                throw new RosterUnfollowedException("Compliance failure: no nurse assigned for morning (08:00-16:00) on " + dow);
+            }
+            if (!eveningCovered) {
+                throw new RosterUnfollowedException("Compliance failure: no nurse assigned for evening (14:00-22:00) on " + dow);
+            }
+            if (!doctorOneHourPresent) {
+                throw new RosterUnfollowedException("Compliance failure: no doctor 1-hour shift on " + dow);
             }
         }
 
-        // Additional check: ensure total nurse shifts per week equals 14 across roster (2 per day * 7)
-        long totalNurseShifts = roster.values().stream()
-                .flatMap(List::stream)
-                .filter(shift -> {
-                    // find staff for shift and check if nurse
-                    // we must map shift -> staffId to determine staff role; this depends on Schedule internals.
-                    return true; // skip here; optional detailed check can be added if Schedule provides assignment mapping
-                }).count();
-        // optional: implement detailed count if schedule exposes assignments per day
+        // Check each nurse does not exceed 8 hours on any given calendar day
+        // For every staffId that is a nurse, compute per-calendar-day sum
+        for (Map.Entry<String, List<Shift>> entry : roster.entrySet()) {
+            String staffId = entry.getKey();
+            Staff staff = staffMap.get(staffId);
+            if (!(staff instanceof Nurse)) continue;
+
+            Map<LocalDate, Long> hoursPerDay = new HashMap<>();
+            for (Shift shift : entry.getValue()) {
+                LocalDateTime s = (LocalDateTime) shift.getStart();
+                LocalDateTime e = (LocalDateTime) shift.getEnd();
+                // We assume shifts do not span more than 24 hours and belong to a single calendar day in this design
+                LocalDate d = s.toLocalDate();
+                long hours = Duration.between(s, e).toHours();
+                hoursPerDay.merge(d, hours, Long::sum);
+            }
+
+            for (Map.Entry<LocalDate, Long> e : hoursPerDay.entrySet()) {
+                if (e.getValue() > 8) {
+                    throw new RosterUnfollowedException("Compliance failure: nurse " + staffId +
+                            " assigned " + e.getValue() + " hours on " + e.getKey() + " (max 8)");
+                }
+            }
+        }
     }
 
     // --------------------------
@@ -162,9 +209,11 @@ public class HealthCareHome implements Serializable {
 
     public void assigningShift(Staff manager, Staff staff, Shift shift) {
         requireAuthorizeManager(manager);
-        scheduler.assigningShiftToStaff(staff, shift);
+        scheduler.assigningShiftToStaff(staff, shift); // ✅ this adds to the scheduler’s map and dailyRoster
         audit.entryLog(manager.getId(), Access.SHIFT_ASSIGNMENT, "Assigned shift to " + staff.getId());
     }
+
+
 
     public void updateStaffPassword(Staff manager, String staffId, String newPass) {
         requireAuthorizeManager(manager);

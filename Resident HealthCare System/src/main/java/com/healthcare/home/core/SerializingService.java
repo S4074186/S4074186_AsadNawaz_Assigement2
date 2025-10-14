@@ -37,6 +37,7 @@ public class SerializingService {
         if (!Files.exists(HEALTH_CARE_SYSTEM_FILE)) {
             // create new system with default staff
             HealthCareHome home = new HealthCareHome();
+            home.checkCompliance();  // throws if schedule violates rules
 
             Manager manager = new Manager("Manager", "admin", "admin123");
             Doctor doctor1 = new Doctor("Doctor1", "doctor1", "doctor1");
@@ -89,6 +90,7 @@ public class SerializingService {
                 home.assigningShift(manager, nurse7, new Shift(eveningStart, eveningEnd));
                 home.assigningShift(manager, nurse8, new Shift(eveningStart, eveningEnd));
             }
+            home.checkCompliance();
 
             return home;
         }

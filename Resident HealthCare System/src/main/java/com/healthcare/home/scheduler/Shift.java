@@ -14,11 +14,11 @@ public class Shift implements Serializable {
         this.end = end;
     }
 
-    public ChronoLocalDateTime<?> getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public ChronoLocalDateTime<?> getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 

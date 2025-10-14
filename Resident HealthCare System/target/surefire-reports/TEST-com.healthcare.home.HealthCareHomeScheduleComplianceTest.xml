@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.healthcare.home.HealthCareHomeTest" time="0.127" tests="9" errors="0" skipped="0" failures="1">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.healthcare.home.HealthCareHomeScheduleComplianceTest" time="0.189" tests="3" errors="0" skipped="0" failures="1">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -64,29 +64,20 @@
     <property name="maven.repo.local" value="C:\Users\talha\.m2\repository"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="nurseNotRosteredShouldNotAssignResident" classname="com.healthcare.home.HealthCareHomeTest" time="0.016"/>
-  <testcase name="dischargeResidentShouldVacateBed" classname="com.healthcare.home.HealthCareHomeTest" time="0.071"/>
-  <testcase name="addResidentToVacantBedTest" classname="com.healthcare.home.HealthCareHomeTest" time="0.008"/>
-  <testcase name="nurseShiftExceeds8HoursShouldFailCompliance" classname="com.healthcare.home.HealthCareHomeTest" time="0.007"/>
-  <testcase name="checkComplianceShouldPassForValidShifts" classname="com.healthcare.home.HealthCareHomeTest" time="0.009">
-    <failure message="Unexpected exception thrown: com.healthcare.home.exceptions.RosterUnfollowedException: Compliance failure: no nurse assigned for morning (08:00-16:00) on MONDAY" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Unexpected exception thrown: com.healthcare.home.exceptions.RosterUnfollowedException: Compliance failure: no nurse assigned for morning (08:00-16:00) on MONDAY
-	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
-	at org.junit.jupiter.api.AssertDoesNotThrow.createAssertionFailedError(AssertDoesNotThrow.java:84)
-	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:53)
-	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:36)
-	at org.junit.jupiter.api.Assertions.assertDoesNotThrow(Assertions.java:3168)
-	at com.healthcare.home.HealthCareHomeTest.checkComplianceShouldPassForValidShifts(HealthCareHomeTest.java:134)
+  <testcase name="testComplianceSuccess" classname="com.healthcare.home.HealthCareHomeScheduleComplianceTest" time="0.086"/>
+  <testcase name="testMissingCoverage" classname="com.healthcare.home.HealthCareHomeScheduleComplianceTest" time="0.025"/>
+  <testcase name="testNurseOverworked" classname="com.healthcare.home.HealthCareHomeScheduleComplianceTest" time="0.015">
+    <failure message="expected: &lt;true&gt; but was: &lt;false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:63)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:36)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:31)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:183)
+	at com.healthcare.home.HealthCareHomeScheduleComplianceTest.testNurseOverworked(HealthCareHomeScheduleComplianceTest.java:66)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: com.healthcare.home.exceptions.RosterUnfollowedException: Compliance failure: no nurse assigned for morning (08:00-16:00) on MONDAY
-	at com.healthcare.home.core.HealthCareHome.checkCompliance(HealthCareHome.java:170)
-	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:49)
-	... 6 more
 ]]></failure>
   </testcase>
-  <testcase name="nurseCannotAddStaffShouldThrowException" classname="com.healthcare.home.HealthCareHomeTest" time="0.003"/>
-  <testcase name="doctorShiftLongerThanOneHourShouldFailCompliance" classname="com.healthcare.home.HealthCareHomeTest" time="0.002"/>
-  <testcase name="managerCanAddStaffSuccessfully" classname="com.healthcare.home.HealthCareHomeTest" time="0.0"/>
-  <testcase name="addResidentToOccupiedBedShouldThrowException" classname="com.healthcare.home.HealthCareHomeTest" time="0.0"/>
 </testsuite>

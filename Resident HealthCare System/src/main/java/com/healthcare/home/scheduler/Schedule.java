@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 
 import com.healthcare.home.core.HealthCareHome;
 import com.healthcare.home.exceptions.RosterUnfollowedException;
+import com.healthcare.home.staff.Nurse;
 import com.healthcare.home.staff.Staff;
 
 public class Schedule implements Serializable {
@@ -25,17 +26,20 @@ public class Schedule implements Serializable {
         dailyRoster.computeIfAbsent(staff.getId(), k -> new ArrayList<>());
 
         long shiftCountToday = dailyRoster.get(staff.getId()).stream()
-                .filter(s -> s.getStart().equals(shift.getStart()))
+                .filter(s -> s.getStart().toLocalDate().equals(shift.getStart().toLocalDate()))
                 .count();
 
-        if (shiftCountToday >= 1) {
-            System.err.println("Shift skipped for " + staff.getClass().getSimpleName() +
-                    " (" + staff.getId() + ") at " + shift.getStart());
-            throw new RosterUnfollowedException("Too many shifts for " + staff.getId() + " on " + shift.getStart());
+        if (shiftCountToday >= 2 && staff instanceof Nurse) {
+            throw new RosterUnfollowedException("Too many shifts for nurse " + staff.getId());
         }
 
         dailyRoster.get(staff.getId()).add(shift);
+
+        // ✅ also add to the EnumMap for day-based compliance check
+        DayOfWeek day = shift.getStart().getDayOfWeek();
+        map.computeIfAbsent(day, k -> new ArrayList<>()).add(new ShiftAssignment(shift, staff));
     }
+
 
     public boolean isAvailableOnDuty(Staff staff, LocalDateTime time) {
         return dailyRoster.getOrDefault(staff.getId(), List.of()).stream()

@@ -1,4 +1,20 @@
 -------------------------------------------------------------------------------
 Test set: com.healthcare.home.HealthCareHomeTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.122 s -- in com.healthcare.home.HealthCareHomeTest
+Tests run: 9, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.127 s <<< FAILURE! -- in com.healthcare.home.HealthCareHomeTest
+com.healthcare.home.HealthCareHomeTest.checkComplianceShouldPassForValidShifts -- Time elapsed: 0.009 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception thrown: com.healthcare.home.exceptions.RosterUnfollowedException: Compliance failure: no nurse assigned for morning (08:00-16:00) on MONDAY
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at org.junit.jupiter.api.AssertDoesNotThrow.createAssertionFailedError(AssertDoesNotThrow.java:84)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:53)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:36)
+	at org.junit.jupiter.api.Assertions.assertDoesNotThrow(Assertions.java:3168)
+	at com.healthcare.home.HealthCareHomeTest.checkComplianceShouldPassForValidShifts(HealthCareHomeTest.java:134)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+Caused by: com.healthcare.home.exceptions.RosterUnfollowedException: Compliance failure: no nurse assigned for morning (08:00-16:00) on MONDAY
+	at com.healthcare.home.core.HealthCareHome.checkCompliance(HealthCareHome.java:170)
+	at org.junit.jupiter.api.AssertDoesNotThrow.assertDoesNotThrow(AssertDoesNotThrow.java:49)
+	... 6 more
+
