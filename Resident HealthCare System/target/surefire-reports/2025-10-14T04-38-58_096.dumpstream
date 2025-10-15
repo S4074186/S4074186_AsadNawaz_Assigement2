@@ -1,5 +1,0 @@
-# Created at 2025-10-14T04:38:58.772
-Boot Manifest-JAR contains absolute paths in classpath 'E:\Resident HealthCare System\Resident HealthCare System\target\test-classes'
-Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-'other' has different root
-

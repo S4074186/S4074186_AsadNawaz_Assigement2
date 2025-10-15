@@ -10,7 +10,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.healthcare.home.controller.LoginController"
+            fx:controller="com.healthcare.home.controllers.LoginHandler"
             prefWidth="480.0" prefHeight="340.0"
             style="-fx-background-color: #f8f9fc;">
 
@@ -43,7 +43,7 @@
 
             <!-- Login Button -->
             <Button fx:id="loginButton" text="Login"
-                    onAction="#handleLogin"
+                    onAction="#processLogin"
                     style="-fx-background-color: #2a4d7f; -fx-text-fill: white; -fx-font-weight: bold;"
                     prefWidth="120" />
 

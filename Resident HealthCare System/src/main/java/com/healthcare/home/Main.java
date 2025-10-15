@@ -1,8 +1,8 @@
 package com.healthcare.home;
 
-import com.healthcare.home.core.HealthCareHome;
-import com.healthcare.home.core.SerializingService;
-import com.healthcare.home.scheduler.Schedule;
+import com.healthcare.home.core.ResidentHealthCareHome;
+import com.healthcare.home.core.SerializingHandlerService;
+import com.healthcare.home.scheduler.Scheduler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,21 +13,21 @@ public class Main extends Application {
     launch(args);
     }
 
-    private static HealthCareHome home;
+    private static ResidentHealthCareHome home;
 
-    public static HealthCareHome getHome() {
+    public static ResidentHealthCareHome getHome() {
         return home;
     }
 
-    public static void setHome(HealthCareHome home) {
+    public static void setHome(ResidentHealthCareHome home) {
         Main.home = home;
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        home = SerializingService.readOrCreateFile();
-        Schedule schedule = new Schedule();
-        schedule.startComplianceScheduler(home);
+        home = SerializingHandlerService.readOrCreateFile();
+        Scheduler scheduler = new Scheduler();
+        scheduler.startComplianceScheduler(home);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/healthcare/home/view/login.fxml"));
         Scene scene = new Scene(loader.load());
@@ -39,7 +39,7 @@ public class Main extends Application {
 
     @Override
     public void stop() {
-        SerializingService.saveRecordsInFile(home);
-        Schedule.stopScheduler();
+        SerializingHandlerService.saveRecordsInFile(home);
+        Scheduler.stopScheduler();
     }
 }

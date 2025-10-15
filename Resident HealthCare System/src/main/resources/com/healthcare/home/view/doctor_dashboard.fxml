@@ -6,20 +6,20 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.healthcare.home.controller.DoctorDashboardController">
+            fx:controller="com.healthcare.home.controllers.DoctorDashboard">
     <top>
         <ToolBar>
-            <Button fx:id="prescribeBtn" text="Add Prescription" onAction="#onPrescribe"/>
+            <Button fx:id="prescribeButton" text="Add Prescription" onAction="#onPrescribe"/>
             <Region prefWidth="420"/>
-            <Button fx:id="logoutBtn" text="Logout" onAction="#onLogout"/>
+            <Button fx:id="logoutButton" text="Logout" onAction="#onLogout"/>
         </ToolBar>
     </top>
     <center>
         <TableView fx:id="bedTable" prefWidth="600" prefHeight="400">
             <columns>
-                <TableColumn fx:id="colBedId" text="Bed ID" prefWidth="200"/>
-                <TableColumn fx:id="colResident" text="Resident" prefWidth="200"/>
-                <TableColumn fx:id="colPrescription" text="Prescription" prefWidth="200"/>
+                <TableColumn fx:id="columnBed" text="Bed ID" prefWidth="200"/>
+                <TableColumn fx:id="columnResident" text="Resident" prefWidth="200"/>
+                <TableColumn fx:id="columnPrescription" text="Prescription" prefWidth="200"/>
             </columns>
         </TableView>
     </center>

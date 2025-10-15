@@ -6,22 +6,22 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.healthcare.home.controller.ManagerDashboardController">
+            fx:controller="com.healthcare.home.controllers.ManagerDashboard">
     <top>
         <ToolBar>
-            <Button fx:id="addResidentBtn" text="Add Resident" onAction="#onAddResident"/>
-            <Button fx:id="addStaffBtn" text="Add Staff" onAction="#onAddStaff"/>
-            <Button fx:id="dischargeBtn" text="Discharge" onAction="#onDischarge"/>
+            <Button fx:id="addResidentButton" text="Add Resident" onAction="#onAddResident"/>
+            <Button fx:id="addStaffButton" text="Add Staff" onAction="#onAddStaff"/>
+            <Button fx:id="dischargeButton" text="Discharge" onAction="#onDischarge"/>
             <Region prefWidth="400"/>
-            <Button fx:id="logoutBtn" text="Logout" onAction="#onLogout" alignment="BASELINE_RIGHT"/>
+            <Button fx:id="logoutButton" text="Logout" onAction="#onLogout" alignment="BASELINE_RIGHT"/>
         </ToolBar>
     </top>
     <center>
         <TableView fx:id="bedTable" prefWidth="600" prefHeight="400">
             <columns>
-                <TableColumn fx:id="colBedId" text="Bed ID" prefWidth="200"/>
-                <TableColumn fx:id="colResident" text="Resident" prefWidth="200"/>
-                <TableColumn fx:id="colPrescription" text="Prescription" prefWidth="200"/>
+                <TableColumn fx:id="columnBedId" text="Bed ID" prefWidth="200"/>
+                <TableColumn fx:id="columnResident" text="Resident" prefWidth="200"/>
+                <TableColumn fx:id="columnPrescription" text="Prescription" prefWidth="200"/>
             </columns>
         </TableView>
     </center>
