@@ -7,22 +7,29 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Main extends Application {
+    /**
+     * main
+     *
+     * @param args
+     */
     public static void main(String[] args) {
-    launch(args);
+        launch(args);
     }
 
+    @Getter
+    @Setter
     private static ResidentHealthCareHome home;
 
-    public static ResidentHealthCareHome getHome() {
-        return home;
-    }
-
-    public static void setHome(ResidentHealthCareHome home) {
-        Main.home = home;
-    }
-
+    /**
+     * start method tells the Java Compiler to start from here
+     *
+     * @param stage
+     * @throws Exception
+     */
     @Override
     public void start(Stage stage) throws Exception {
         home = SerializingHandlerService.readOrCreateFile();
@@ -37,6 +44,9 @@ public class Main extends Application {
         stage.show();
     }
 
+    /**
+     * stop
+     */
     @Override
     public void stop() {
         SerializingHandlerService.saveRecordsInFile(home);

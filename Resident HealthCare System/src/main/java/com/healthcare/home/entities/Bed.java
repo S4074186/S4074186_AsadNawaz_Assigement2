@@ -12,6 +12,10 @@ public class Bed implements Serializable {
     private Gender gender;
     private Resident resident;
 
+    /**
+     * isVacant
+     * @return
+     */
     public boolean isVacant() {
         return resident == null;
     }

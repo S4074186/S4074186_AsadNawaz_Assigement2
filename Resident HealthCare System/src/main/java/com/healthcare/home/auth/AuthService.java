@@ -6,9 +6,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 
+/**
+ * AuthService class checks or verify the access to each authorized role
+ */
 public final class AuthService {
-    private AuthService() { }
+    private AuthService() {
+    }
 
+    /**
+     * method to verify authorize access to the role
+     *
+     * @param staff
+     * @param access
+     * @throws SecurityException
+     */
     public static void authorizeOrThrow(Staff staff, AuthAccess access) throws SecurityException {
         if (staff == null) throw new SecurityException("No staff provided");
         if (!staff.hasAccess(access)) {
@@ -19,15 +30,23 @@ public final class AuthService {
         }
     }
 
+    /**
+     * checks the staff is rostered or not
+     *
+     * @param staff
+     * @return
+     */
     private static boolean isRosteredNow(Staff staff) {
         try {
             Method method1 = staff.getClass().getMethod("isRosteredAt", java.time.LocalDateTime.class);
             return (boolean) method1.invoke(staff, LocalDateTime.now());
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) { }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+        }
         try {
             Method method2 = staff.getClass().getMethod("isRosteredNow");
             return (boolean) method2.invoke(staff);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) { }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
+        }
         return true;
     }
 }

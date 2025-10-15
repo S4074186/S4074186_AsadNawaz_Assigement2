@@ -318,3 +318,222 @@
 2025-10-15 06:29:43 | staff:STF-032 | action:ADD_STAFF | Added staff with id: STF-033
 2025-10-15 06:29:43 | staff:STF-035 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-036
 2025-10-15 06:29:43 | staff:STF-036 | action:ADD_RESIDENT | Assigned resident RES-004 to W1-R101-B1
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-002
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-003
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-004
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-005
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-006
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-007
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-008
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-009
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-010
+2025-10-15 07:52:25 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-011
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:25 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-002
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-003
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-004
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-005
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-006
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-007
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-008
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-009
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-010
+2025-10-15 07:52:56 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-011
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:52:56 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-002
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-003
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-004
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-005
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-006
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-007
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-008
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-009
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-010
+2025-10-15 07:53:19 | staff:SystemGenerated | action:ADD_STAFF | Registered staff with id: STF-011
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-003
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-004
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-005
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-006
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-007
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-008
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-009
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-010
+2025-10-15 07:53:19 | staff:STF-002 | action:SHIFT_ASSIGNMENT | Assigned shift to STF-011

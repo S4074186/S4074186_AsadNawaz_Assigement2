@@ -16,17 +16,33 @@ import javafx.scene.control.*;
 
 import java.util.Optional;
 
+/**
+ * ManagerDashboard
+ */
 public class ManagerDashboard extends MainDashboard {
     private Staff staff;
 
-    @FXML private TableView<BedRow> bedTable;
-    @FXML private TableColumn<BedRow, String> columnBedId;
-    @FXML private TableColumn<BedRow, String> columnResident;
-    @FXML private TableColumn<BedRow, String> columnPrescription;
-    @FXML private Button addResidentButton;
-    @FXML private Button addStaffButton;
-    @FXML private Button dischargeButton;
+    @FXML
+    private TableView<BedRow> bedTable;
+    @FXML
+    private TableColumn<BedRow, String> columnBedId;
+    @FXML
+    private TableColumn<BedRow, String> columnResident;
+    @FXML
+    private TableColumn<BedRow, String> columnPrescription;
+    @FXML
+    private Button addResidentButton;
+    @FXML
+    private Button addStaffButton;
+    @FXML
+    private Button dischargeButton;
 
+    /**
+     * init
+     *
+     * @param home
+     * @param staff
+     */
     public void init(ResidentHealthCareHome home, Staff staff) {
         this.staff = staff;
         setHome(home);
@@ -37,6 +53,9 @@ public class ManagerDashboard extends MainDashboard {
         dischargeButton.setVisible(staff.hasAccess(AuthAccess.DISCHARGE_RESIDENT));
     }
 
+    /**
+     * refreshBeds method to refresh the bed list with updated items and values
+     */
     private void refreshBeds() {
         ObservableList<BedRow> bedRows = FXCollections.observableArrayList();
         for (Bed bed : home.getBedList().values()) {
@@ -47,6 +66,9 @@ public class ManagerDashboard extends MainDashboard {
         bedTable.setItems(bedRows);
     }
 
+    /**
+     * onAddResident
+     */
     @FXML
     public void onAddResident() {
         try {
@@ -114,6 +136,9 @@ public class ManagerDashboard extends MainDashboard {
         }
     }
 
+    /**
+     * onAddStaff
+     */
     @FXML
     public void onAddStaff() {
         try {
@@ -183,6 +208,9 @@ public class ManagerDashboard extends MainDashboard {
         }
     }
 
+    /**
+     * onDischarge
+     */
     @FXML
     public void onDischarge() {
         try {
@@ -223,6 +251,11 @@ public class ManagerDashboard extends MainDashboard {
         }
     }
 
+    /**
+     * showResidentDetails
+     *
+     * @param bedId
+     */
     private void showResidentDetails(String bedId) {
         try {
             Bed bed = home.getBedList().get(bedId);
@@ -240,13 +273,19 @@ public class ManagerDashboard extends MainDashboard {
         }
     }
 
+    /**
+     * popupAlert
+     *
+     * @param message
+     */
     private void popupAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message);
         alert.showAndWait();
     }
 
-
-
+    /**
+     * setupTable
+     */
     private void setupTable() {
         setupCommonColumns(columnBedId, columnResident, columnPrescription);
         bedTable.setRowFactory(tableView -> {

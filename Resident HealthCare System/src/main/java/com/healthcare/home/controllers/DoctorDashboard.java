@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * DoctorDashboard
+ */
 public class DoctorDashboard extends MainDashboard {
     private Staff staff;
 
@@ -33,6 +36,12 @@ public class DoctorDashboard extends MainDashboard {
     @FXML
     private Button prescribeButton;
 
+    /**
+     * init
+     *
+     * @param home
+     * @param staff
+     */
     public void init(ResidentHealthCareHome home, Staff staff) {
         this.staff = staff;
         setHome(home);
@@ -41,14 +50,25 @@ public class DoctorDashboard extends MainDashboard {
         prescribeButton.setVisible(staff.hasAccess(AuthAccess.WRITE_PRESCRIPTION));
     }
 
+    /**
+     * setupTable
+     */
     private void setupTable() {
         setupCommonColumns(columnBed, columnResident, columnPrescription);
     }
 
+    /**
+     * getHome
+     *
+     * @return
+     */
     private ResidentHealthCareHome getHome() {
         return (ResidentHealthCareHome) super.home;
     }
 
+    /**
+     * Refreshing the bed list
+     */
     private void refreshBeds() {
         ObservableList<BedRow> rows = FXCollections.observableArrayList();
         for (Bed bed : getHome().getBedList().values()) {
@@ -66,6 +86,9 @@ public class DoctorDashboard extends MainDashboard {
         bedTable.setItems(rows);
     }
 
+    /**
+     * onPrescribe by doctor
+     */
     @FXML
     public void onPrescribe() {
         try {
@@ -177,6 +200,11 @@ public class DoctorDashboard extends MainDashboard {
         }
     }
 
+    /**
+     * popupAlert
+     *
+     * @param msg
+     */
     private void popupAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, msg);
         alert.showAndWait();

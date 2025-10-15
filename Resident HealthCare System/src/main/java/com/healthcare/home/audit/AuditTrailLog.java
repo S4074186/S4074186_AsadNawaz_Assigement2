@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
- *
+ * AuditTrailLog class to trail every action to log file
  */
 public final class AuditTrailLog implements Serializable {
 
@@ -17,7 +17,8 @@ public final class AuditTrailLog implements Serializable {
     private static final AuditTrailLog AUDIT_TRAIL_LOG = new AuditTrailLog();
 
     // Represents a single log entry
-    public static record EntryRecord(LocalDateTime localDateTime, String staffId, String action, String message) implements Serializable {
+    public static record EntryRecord(LocalDateTime localDateTime, String staffId, String action,
+                                     String message) implements Serializable {
     }
 
     private static final List<EntryRecord> ENTRY_RECORD_LIST = new ArrayList<>();
@@ -46,6 +47,9 @@ public final class AuditTrailLog implements Serializable {
         entryLog(staffId, action == null ? "" : action.name(), message);
     }
 
+    /**
+     * Writing logs in an external file
+     */
     private static void writeLogsToFile(EntryRecord entryRecord) {
         try (FileWriter fileWriter = new FileWriter(ACTIONS_LOG, true);
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -62,7 +66,13 @@ public final class AuditTrailLog implements Serializable {
         return List.copyOf(ENTRY_RECORD_LIST);
     }
 
-    private static String validate(String s) {
-        return s == null ? "" : s.replaceAll("[\\r\\n]", " ");
+    /**
+     * Validating the input
+     *
+     * @param string
+     * @return
+     */
+    private static String validate(String string) {
+        return string == null ? "" : string.replaceAll("[\\r\\n]", " ");
     }
 }

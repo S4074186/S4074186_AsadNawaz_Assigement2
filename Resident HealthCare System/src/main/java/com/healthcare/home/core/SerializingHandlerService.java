@@ -16,10 +16,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * SerializingHandlerService
+ */
 public class SerializingHandlerService {
 
     private static final Path HEALTH_CARE_SYSTEM_FILE = Paths.get("healthCareSystem.dat");
 
+    /**
+     * saveRecordsInFile method to serialization to the file
+     *
+     * @param home
+     */
     public static void saveRecordsInFile(ResidentHealthCareHome home) {
         try {
             Path parent = HEALTH_CARE_SYSTEM_FILE.getParent();
@@ -33,11 +41,15 @@ public class SerializingHandlerService {
         }
     }
 
+    /**
+     * readOrCreateFile method to deserialization the object from the serialized file
+     *
+     * @return
+     */
     public static ResidentHealthCareHome readOrCreateFile() {
         if (!Files.exists(HEALTH_CARE_SYSTEM_FILE)) {
             // create new system with default staff
             ResidentHealthCareHome home = new ResidentHealthCareHome();
-            home.checkingCompliance();  // throws if schedule violates rules
 
             Manager manager = new Manager("Manager", "admin", "admin123");
             Doctor doctor1 = new Doctor("Doctor1", "doctor1", "doctor1");
@@ -106,7 +118,8 @@ public class SerializingHandlerService {
                     try {
                         int num = Integer.parseInt(staffId.substring(5));
                         if (num > maxStaff) maxStaff = num;
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 }
             }
             Staff.setIdCounter(maxStaff);
@@ -125,7 +138,8 @@ public class SerializingHandlerService {
                     try {
                         int num = Integer.parseInt(residentId.substring(3));
                         if (num > maxResidents) maxResidents = num;
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 }
 
                 // Prescription ID counter
@@ -138,7 +152,8 @@ public class SerializingHandlerService {
                             try {
                                 long num = Long.parseLong(prescriptionId.substring(3));
                                 if (num > maxPrescriptions) maxPrescriptions = num;
-                            } catch (Exception ignored) {}
+                            } catch (Exception ignored) {
+                            }
                         }
                     }
                 }

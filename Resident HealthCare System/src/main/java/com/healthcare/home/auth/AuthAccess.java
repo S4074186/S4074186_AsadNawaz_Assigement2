@@ -1,5 +1,8 @@
 package com.healthcare.home.auth;
 
+/**
+ * AuthAccess
+ */
 public enum AuthAccess {
     ADD_STAFF,
     UPDATE_STAFF,

@@ -19,6 +19,14 @@ public class Prescription implements Serializable {
     private final List<String> times = new ArrayList<>();
     private final List<Medication> administrations = new ArrayList<>();
 
+    /**
+     * Prescription Constructor
+     *
+     * @param doctorId
+     * @param medicine
+     * @param dose
+     * @param times
+     */
     public Prescription(String doctorId, String medicine, String dose, List<String> times) {
         this.id = generateId();
         this.doctorId = doctorId;
@@ -29,11 +37,21 @@ public class Prescription implements Serializable {
         }
     }
 
+    /**
+     * generateId
+     *
+     * @return
+     */
     private synchronized String generateId() {
         idCounter++;
         return String.format("PRE-%03d", idCounter);
     }
 
+    /**
+     * administer
+     *
+     * @param nurseId
+     */
     public void administer(String nurseId) {
         Medication med = new Medication(
                 this.id,

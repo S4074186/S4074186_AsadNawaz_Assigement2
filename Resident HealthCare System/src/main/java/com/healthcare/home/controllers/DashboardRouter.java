@@ -10,7 +10,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * DashboardRouter class to route the user towards correct dashboard through its role
+ */
 public class DashboardRouter {
+
+    /**
+     * showDashboard method to open and route the correct dashboard
+     *
+     * @param staff
+     * @param stage
+     * @throws Exception
+     */
     public static void showDashboard(Staff staff, Stage stage) throws Exception {
         ResidentHealthCareHome home = Main.getHome();
         if (staff.getRole() == Role.MANAGER) {

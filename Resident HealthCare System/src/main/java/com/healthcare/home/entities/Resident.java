@@ -17,14 +17,28 @@ public class Resident implements Serializable {
     private String bedId;
     private List<Prescription> prescriptionList;
 
+    /**
+     * Resident Constructor
+     *
+     * @param name
+     * @param gender
+     * @param isolation
+     * @param bedId
+     */
     public Resident(String name, Gender gender, boolean isolation, String bedId) {
-        this.id = generateId();;
+        this.id = generateId();
+        ;
         this.name = name;
         this.gender = gender;
         this.isolation = isolation;
         this.bedId = bedId;
     }
 
+    /**
+     * generateId
+     *
+     * @return
+     */
     private synchronized String generateId() {
         idCounter++;
         return String.format("RES-%03d", idCounter);

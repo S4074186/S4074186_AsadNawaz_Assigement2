@@ -9,10 +9,17 @@ public class BedRow {
     public String residentId;
     public final Gender gender;
 
-    public BedRow(String b, String r, Gender g) {
-        this.bedId = new SimpleStringProperty(b);
-        this.residentName = new SimpleStringProperty(r);
-        this.gender = g;
+    /**
+     * BedRow Constructor
+     *
+     * @param bedId
+     * @param residentName
+     * @param gender
+     */
+    public BedRow(String bedId, String residentName, Gender gender) {
+        this.bedId = new SimpleStringProperty(bedId);
+        this.residentName = new SimpleStringProperty(residentName);
+        this.gender = gender;
     }
 
     public String getBedId() {

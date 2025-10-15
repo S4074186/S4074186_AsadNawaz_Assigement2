@@ -17,6 +17,14 @@ public abstract class Staff implements Serializable {
     private final String username;
     private String password;
 
+    /**
+     * Staff Constructor
+     *
+     * @param name
+     * @param role
+     * @param username
+     * @param password
+     */
     protected Staff(String name, Role role, String username, String password) {
         this.id = this.generateId();
         this.name = name;
@@ -25,6 +33,12 @@ public abstract class Staff implements Serializable {
         this.password = password;
     }
 
+    /**
+     * hasAccess method checks or verify that the user has specific access or not
+     *
+     * @param authAccess
+     * @return
+     */
     public boolean hasAccess(AuthAccess authAccess) {
         return switch (role) {
             case MANAGER -> authAccess == AuthAccess.ADD_STAFF ||
@@ -42,6 +56,11 @@ public abstract class Staff implements Serializable {
         };
     }
 
+    /**
+     * generateId
+     *
+     * @return
+     */
     private synchronized String generateId() {
         idCounter++;
         return String.format("STF-%03d", idCounter);

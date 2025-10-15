@@ -8,13 +8,22 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+/**
+ * LoginHandler Class responsible to authenticate and login the user
+ */
 public class LoginHandler {
-    @FXML private TextField username;
-    @FXML private PasswordField password;
-    @FXML private Button loginButton;
+    @FXML
+    private TextField username;
+    @FXML
+    private PasswordField password;
+    @FXML
+    private Button loginButton;
 
     private final ResidentHealthCareHome home = Main.getHome();
 
+    /**
+     * initialize user
+     */
     @FXML
     public void initialize() {
         // Call login when user presses Enter
@@ -22,8 +31,13 @@ public class LoginHandler {
         password.setOnAction(this::processLogin);
     }
 
+    /**
+     * processLogin with an event
+     *
+     * @param event
+     */
     @FXML
-    public void processLogin(ActionEvent e) {
+    public void processLogin(ActionEvent event) {
         String username = this.username.getText().trim();
         String password = this.password.getText().trim();
 
@@ -51,6 +65,12 @@ public class LoginHandler {
         }
     }
 
+    /**
+     * highlightEmptyFields
+     *
+     * @param username
+     * @param password
+     */
     private void highlightEmptyFields(String username, String password) {
         if (username.isEmpty()) this.username.setStyle("-fx-border-color: red;");
         else this.username.setStyle("");
@@ -58,6 +78,12 @@ public class LoginHandler {
         else this.password.setStyle("");
     }
 
+    /**
+     * popupAlert
+     *
+     * @param title
+     * @param msg
+     */
     private void popupAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);

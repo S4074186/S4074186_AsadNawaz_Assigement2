@@ -15,6 +15,9 @@ import javafx.scene.control.*;
 
 import java.util.List;
 
+/**
+ * NurseDashboard
+ */
 public class NurseDashboard extends MainDashboard {
     private Staff staff;
 
@@ -31,6 +34,12 @@ public class NurseDashboard extends MainDashboard {
     @FXML
     private Button administerButton;
 
+    /**
+     * init
+     *
+     * @param home
+     * @param staff
+     */
     public void init(ResidentHealthCareHome home, Staff staff) {
         this.staff = staff;
         setHome(home);
@@ -40,10 +49,18 @@ public class NurseDashboard extends MainDashboard {
         administerButton.setVisible(staff.hasAccess(AuthAccess.ADMINISTER_MEDICATION));
     }
 
+    /**
+     * getHome
+     *
+     * @return
+     */
     private ResidentHealthCareHome getHome() {
         return (ResidentHealthCareHome) super.home;
     }
 
+    /**
+     * refreshBeds
+     */
     private void refreshBeds() {
         ObservableList<BedRow> rows = FXCollections.observableArrayList();
         for (Bed bed : getHome().getBedList().values()) {
@@ -55,11 +72,16 @@ public class NurseDashboard extends MainDashboard {
         bedTable.setItems(rows);
     }
 
+    /**
+     * setupTable
+     */
     private void setupTable() {
         setupCommonColumns(columnBed, columnResident, columnPrescription);
     }
 
-    // Allow nurse to move resident to another bed
+    /**
+     * onMove method allow nurse to move resident to another bed
+     */
     @FXML
     public void onMove() {
         try {
@@ -104,6 +126,9 @@ public class NurseDashboard extends MainDashboard {
         });
     }
 
+    /**
+     * onAdminister method allow nurse to administer the medicines to nurse
+     */
     @FXML
     public void onAdminister() {
         try {
@@ -165,6 +190,11 @@ public class NurseDashboard extends MainDashboard {
         });
     }
 
+    /**
+     * popupAlert
+     *
+     * @param msg
+     */
     private void popupAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, msg);
         alert.showAndWait();

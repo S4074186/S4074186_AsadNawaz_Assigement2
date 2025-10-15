@@ -1,7 +1,5 @@
 package com.healthcare.home.scheduler;
 
-// assuming your main class is named Home
-
 import java.io.Serializable;
 import java.time.*;
 import java.util.*;
@@ -18,12 +16,15 @@ public class Scheduler implements Serializable {
     private final Map<String, List<Shift>> dailyRoster = new HashMap<>();
     private static ScheduledExecutorService scheduler;
 
-//    public List<ShiftAssignment> getAssignments(DayOfWeek d) {
-//        return map.getOrDefault(d, Collections.emptyList());
-//    }
+    public record ShiftAssignment(Shift shift, Staff staff) implements Serializable {
+    }
 
-    public static record ShiftAssignment(Shift shift, Staff staff) implements Serializable {}
-
+    /**
+     * assigningShiftToStaff
+     *
+     * @param staff
+     * @param shift
+     */
     public void assigningShiftToStaff(Staff staff, Shift shift) {
         dailyRoster.computeIfAbsent(staff.getId(), k -> new ArrayList<>());
 
@@ -37,24 +38,37 @@ public class Scheduler implements Serializable {
 
         dailyRoster.get(staff.getId()).add(shift);
 
-        // ✅ also add to the EnumMap for day-based compliance check
+        // add to the EnumMap for day-based compliance check
         DayOfWeek day = shift.start().getDayOfWeek();
         map.computeIfAbsent(day, k -> new ArrayList<>()).add(new ShiftAssignment(shift, staff));
     }
 
-
+    /**
+     * isAvailableOnDuty
+     *
+     * @param staff
+     * @param time
+     * @return
+     */
     public boolean isAvailableOnDuty(Staff staff, LocalDateTime time) {
         return dailyRoster.getOrDefault(staff.getId(), List.of()).stream()
                 .anyMatch(s -> !time.isBefore(s.start()) && !time.isAfter(s.end()));
     }
 
+    /**
+     * getDailyRoster
+     *
+     * @return
+     */
     public Map<String, List<Shift>> getDailyRoster() {
         return Collections.unmodifiableMap(dailyRoster);
     }
 
-    // -----------------------------
-    // Scheduler to call checkCompliance
-    // -----------------------------
+    /**
+     * startComplianceScheduler
+     *
+     * @param home
+     */
     public void startComplianceScheduler(ResidentHealthCareHome home) {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -75,6 +89,12 @@ public class Scheduler implements Serializable {
         }
     }
 
+    /**
+     * getDelayUntilHour
+     *
+     * @param hour
+     * @return
+     */
     private long getDelayUntilHour(int hour) {
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
         java.time.LocalDateTime next = now.withHour(hour).withMinute(0).withSecond(0);
@@ -84,17 +104,9 @@ public class Scheduler implements Serializable {
         return java.time.Duration.between(now, next).getSeconds();
     }
 
-//    private long computeInitialDelay(int targetHour) {
-//        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime target = now.withHour(targetHour).withMinute(0).withSecond(0);
-//
-//        if (now.isAfter(target)) {
-//            target = target.plusDays(1);
-//        }
-//
-//        return Duration.between(now, target).getSeconds();
-//    }
-
+    /**
+     * stopScheduler
+     */
     public static void stopScheduler() {
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdownNow();

@@ -13,21 +13,29 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * MainDashboard
+ */
 public abstract class MainDashboard {
 
-    @FXML private Button logoutButton;
+    @FXML
+    private Button logoutButton;
 
     // allow subclasses to set the home instance
+    @Setter
     protected ResidentHealthCareHome home;
 
-    public void setHome(ResidentHealthCareHome home) {
-        this.home = home;
-    }
-
-    /** Shared table column setup for all dashboards */
+    /**
+     * Shared table column setup for all dashboards
+     *
+     * @param columnBed
+     * @param columnResident
+     * @param columnPrescription
+     */
     protected void setupCommonColumns(
             TableColumn<BedRow, String> columnBed,
             TableColumn<BedRow, String> columnResident,
@@ -74,6 +82,7 @@ public abstract class MainDashboard {
                 expandButton.setStyle("-fx-background-color: transparent; -fx-text-fill: blue; -fx-cursor: hand;");
                 expandButton.setOnAction(actionEvent -> toggleExpand());
             }
+
 
             private void toggleExpand() {
                 if (expandedBox == null) return;
@@ -134,7 +143,11 @@ public abstract class MainDashboard {
         });
     }
 
-    @FXML public void onLogout() {
+    /**
+     * logout
+     */
+    @FXML
+    public void onLogout() {
         try {
             // save all patient related records before logout
             try {
