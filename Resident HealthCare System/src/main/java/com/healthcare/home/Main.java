@@ -1,0 +1,55 @@
+package com.healthcare.home;
+
+import com.healthcare.home.core.ResidentHealthCareHome;
+import com.healthcare.home.core.SerializingHandlerService;
+import com.healthcare.home.scheduler.Scheduler;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import lombok.Getter;
+import lombok.Setter;
+
+public class Main extends Application {
+    /**
+     * main
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Getter
+    @Setter
+    private static ResidentHealthCareHome home;
+
+    /**
+     * start method tells the Java Compiler to start from here
+     *
+     * @param stage
+     * @throws Exception
+     */
+    @Override
+    public void start(Stage stage) throws Exception {
+        home = SerializingHandlerService.readOrCreateFile();
+        Scheduler scheduler = new Scheduler();
+        scheduler.startComplianceScheduler(home);
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/healthcare/home/view/login.fxml"));
+        Scene scene = new Scene(loader.load());
+        stage.setTitle("Resident Health-Care System");
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+    }
+
+    /**
+     * stop
+     */
+    @Override
+    public void stop() {
+        SerializingHandlerService.saveRecordsInFile(home);
+        Scheduler.stopScheduler();
+    }
+}
