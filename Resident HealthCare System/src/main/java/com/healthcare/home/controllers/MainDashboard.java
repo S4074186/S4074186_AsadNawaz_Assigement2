@@ -126,7 +126,7 @@ public abstract class MainDashboard {
                 expandedBox.setStyle("-fx-padding: 4 0 0 18;");
 
                 for (Prescription prescription : prescriptions) {
-                    String prescriptionInfo = prescription.getMedicine() + " (" + prescription.getDose() + ") localDateTime " +
+                    String prescriptionInfo = prescription.getMedicine() + " (" + prescription.getDose() + ") at " +
                             (prescription.getTimes() != null ? prescription.getTimes().toString() : "N/A");
                     Label label = new Label(prescriptionInfo);
                     label.setStyle("-fx-font-size: 12;");

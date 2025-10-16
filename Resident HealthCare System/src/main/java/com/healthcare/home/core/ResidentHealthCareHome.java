@@ -217,8 +217,7 @@ public class ResidentHealthCareHome implements Serializable {
         Bed bed = findBed(bedId);
         if (!bed.isVacant()) throw new BedNotAvailableException("Bed occupied with bed id: " + bedId);
 
-        requireAuthorizeRole(staff, Role.NURSE);
-        requireOnDutyStaff(staff);
+        requireAuthorizeRole(staff, Role.MANAGER);
 
         bed.setResident(resident);
         if (resident.getId() != null) residentList.put(resident.getId(), resident);
@@ -297,7 +296,7 @@ public class ResidentHealthCareHome implements Serializable {
     public void dischargingResident(Staff staffMember, String bedId) {
         if (!(staffMember instanceof Manager)) {
             // nurses may be allowed if rostered
-            requireAuthorizeRole(staffMember, Role.NURSE);
+            requireAuthorizeRole(staffMember, Role.MANAGER);
             requireOnDutyStaff(staffMember);
         }
 
@@ -437,6 +436,6 @@ public class ResidentHealthCareHome implements Serializable {
      */
     public void requireOnDutyStaff(Staff staff) {
         if (!scheduler.isAvailableOnDuty(staff, LocalDateTime.now()))
-            throw new UnAuthorizationException("Staff not rostered localDateTime this time");
+            throw new UnAuthorizationException("Staff not rostered at this time");
     }
 }

@@ -32,7 +32,7 @@ public class ResidentHealthCareHomeTest {
         Resident resident = new Resident("John Doe", Gender.MALE, false, bed.getId());
         resident.setPrescriptionList(List.of(p));
         home.assigningShift(manager, nurse, new Shift(LocalDateTime.now(), LocalDateTime.now().plusHours(8)));
-        home.assigningResidentToBed(nurse, bed.getId(), resident);
+        home.assigningResidentToBed(manager, bed.getId(), resident);
         assertEquals(resident, bed.getResident());
     }
 
@@ -48,7 +48,7 @@ public class ResidentHealthCareHomeTest {
         Resident r2 = new Resident("Bob", Gender.MALE, false, bed.getId());
 
         home.assigningShift(manager, nurse, new Shift(LocalDateTime.now(), LocalDateTime.now().plusHours(8)));
-        home.assigningResidentToBed(nurse, bed.getId(), r1);
+        home.assigningResidentToBed(manager, bed.getId(), r1);
 
         assertThrows(RuntimeException.class, () -> {
             home.assigningResidentToBed(nurse, bed.getId(), r2);
@@ -118,7 +118,7 @@ public class ResidentHealthCareHomeTest {
         Resident res = new Resident("Chris", Gender.MALE, false, bed.getId());
 
         home.assigningShift(manager, nurse, new Shift(LocalDateTime.now(), LocalDateTime.now().plusHours(8)));
-        home.assigningResidentToBed(nurse, bed.getId(), res);
+        home.assigningResidentToBed(manager, bed.getId(), res);
         home.dischargingResident(manager, bed.getId());
 
         assertNull(bed.getResident());
